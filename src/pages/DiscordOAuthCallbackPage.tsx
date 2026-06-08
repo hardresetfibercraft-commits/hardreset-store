@@ -44,12 +44,11 @@ export default function DiscordOAuthCallbackPage() {
       return;
     }
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseAnon = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
     const clientId = import.meta.env.VITE_DISCORD_CLIENT_ID;
     const redirectUri = `${window.location.origin}/auth/discord/callback`;
 
-    if (!supabaseUrl || !supabaseAnon || !clientId) {
+    if (!clientId) {
       const msg = 'Discord OAuth is not configured.';
       setStatus('error');
       setMessage(msg);
@@ -61,11 +60,10 @@ export default function DiscordOAuthCallbackPage() {
       return;
     }
 
-    fetch(`${supabaseUrl}/functions/v1/discord-oauth`, {
+    fetch(`${apiBaseUrl}/api/discord-oauth`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${supabaseAnon}`,
       },
       body: JSON.stringify({ code, redirect_uri: redirectUri, client_id: clientId }),
     })

@@ -35,20 +35,20 @@ function setMetaAttr(html: string, regex: RegExp, attr: string, value: string): 
   });
 }
 
-function injectStoreMeta(supabaseUrl: string): Plugin {
+function injectStoreMeta(apiBaseUrl: string): Plugin {
   return {
     name: 'inject-store-meta',
     apply: 'build',
     transformIndexHtml: {
       order: 'post',
       async handler(html) {
-        if (!supabaseUrl) {
-          console.warn('[inject-store-meta] VITE_SUPABASE_URL not set, skipping');
+        if (!apiBaseUrl || apiBaseUrl.startsWith('/')) {
+          console.warn('[inject-store-meta] VITE_API_BASE_URL not set to an absolute URL, skipping');
           return html;
         }
         try {
           const res = await fetch(
-            `${supabaseUrl}/functions/v1/tip4serv-proxy?action=store`
+            `${apiBaseUrl.replace(/\/$/, '')}/api/tip4serv-proxy?action=store`
           );
           if (!res.ok) {
             console.warn(`[inject-store-meta] store fetch failed: ${res.status}`);
@@ -92,7 +92,15 @@ function injectStoreMeta(supabaseUrl: string): Plugin {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
-    plugins: [react(), injectStoreMeta(env.VITE_SUPABASE_URL || '')],
+    plugins: [react(), injectStoreMeta(env.VITE_API_BASE_URL || '')],
+    server: {
+      proxy: {
+        '/api': {
+          target: env.VITE_API_PROXY_TARGET || 'http://localhost:8787',
+          changeOrigin: true,
+        },
+      },
+    },
     optimizeDeps: {
       exclude: ['lucide-react'],
     },

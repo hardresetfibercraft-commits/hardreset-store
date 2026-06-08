@@ -8,7 +8,8 @@ import type {
 } from './types';
 import { decodeProductData, decodeHtmlEntities } from './utils';
 
-const API_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tip4serv-proxy`;
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const API_URL = `${API_BASE_URL}/api/tip4serv-proxy`;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -155,12 +156,10 @@ export interface RconPlayer {
   eos_id: string;
 }
 
-const RCON_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/rcon-players`;
+const RCON_URL = `${API_BASE_URL}/api/rcon-players`;
 
 const rconHeaders = {
   'Content-Type': 'application/json',
-  'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-  'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
 };
 
 export async function getRconServers(): Promise<{ servers: RconServer[] }> {

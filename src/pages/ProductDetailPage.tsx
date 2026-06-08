@@ -63,7 +63,7 @@ export default function ProductDetailPage() {
     const storeName = store?.title || 'Boutique';
     const title = `${product.name} | ${storeName}`;
 
-    const ogUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/og-product?slug=${product.slug}&site=${encodeURIComponent(window.location.origin)}`;
+    const ogUrl = `${window.location.origin}/product/${product.slug}`;
 
     const metaUpdates: Record<string, string> = {
       'og:title': title,

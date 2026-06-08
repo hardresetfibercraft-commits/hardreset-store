@@ -1,16 +1,43 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { KeyRound, ShieldCheck, Loader as Loader2, LogOut, Save, Lock } from 'lucide-react';
-import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
 import { usePageTitle } from '../lib/usePageTitle';
 
 type Status = 'loading' | 'claim' | 'login' | 'owner' | 'denied';
+
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+const TOKEN_KEY = 'shadow_admin_token';
+
+async function adminRequest<T>(
+  path: string,
+  options: RequestInit = {},
+  token?: string | null,
+): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}/api/admin${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data?.error || `API error: ${res.status}`);
+  }
+  return data as T;
+}
 
 export default function AdminPage() {
   usePageTitle('Administration');
 
   const [status, setStatus] = useState<Status>('loading');
-  const [session, setSession] = useState<Session | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    try {
+      return window.localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return null;
+    }
+  });
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -19,64 +46,50 @@ export default function AdminPage() {
   const [info, setInfo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  async function resolveStatus(currentSession: Session | null) {
-    const { data: ownerExists, error: err } = await supabase.rpc('has_owner');
-    if (err) {
-      setError(err.message);
-      setStatus('login');
-      return;
+  async function resolveStatus(currentToken: string | null) {
+    try {
+      const { hasOwner } = await adminRequest<{ hasOwner: boolean }>('/status');
+      if (!hasOwner) {
+        setStatus('claim');
+        return;
+      }
+
+      if (!currentToken) {
+        setStatus('login');
+        return;
+      }
+
+      const settings = await adminRequest<{ tip4serv_api_key: string }>(
+        '/settings',
+        {},
+        currentToken,
+      );
+      const val = settings.tip4serv_api_key || '';
+      setApiKey(val);
+      setInitialKey(val);
+      setStatus('owner');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      setStatus(currentToken ? 'denied' : 'login');
     }
-
-    if (!ownerExists) {
-      setStatus('claim');
-      return;
-    }
-
-    if (!currentSession) {
-      setStatus('login');
-      return;
-    }
-
-    const { data: isOwner } = await supabase.rpc('is_owner');
-    if (!isOwner) {
-      setStatus('denied');
-      return;
-    }
-
-    const { data: keyRow } = await supabase
-      .from('app_settings')
-      .select('value')
-      .eq('key', 'tip4serv_api_key')
-      .maybeSingle();
-
-    const val = keyRow?.value || '';
-    setApiKey(val);
-    setInitialKey(val);
-    setStatus('owner');
   }
 
   useEffect(() => {
-    let active = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!active) return;
-      setSession(data.session);
-      resolveStatus(data.session);
-    });
+    resolveStatus(token);
+  }, [token]);
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      if (!active) return;
-      setSession(newSession);
-      (async () => {
-        await resolveStatus(newSession);
-      })();
-    });
-
-    return () => {
-      active = false;
-      sub.subscription.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  function saveToken(nextToken: string | null) {
+    setToken(nextToken);
+    try {
+      if (nextToken) {
+        window.localStorage.setItem(TOKEN_KEY, nextToken);
+      } else {
+        window.localStorage.removeItem(TOKEN_KEY);
+      }
+    } catch {
+      // ignore storage failures
+    }
+  }
 
   async function handleClaim(e: FormEvent) {
     e.preventDefault();
@@ -84,31 +97,13 @@ export default function AdminPage() {
     setInfo(null);
     setBusy(true);
     try {
-      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
-        email,
-        password,
+      const data = await adminRequest<{ token: string }>('/claim', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
       });
-      if (signUpErr && !/already|registered/i.test(signUpErr.message)) {
-        throw signUpErr;
-      }
-
-      let userId = signUpData?.user?.id ?? null;
-      if (!userId) {
-        const { data: signInData, error: signInErr } =
-          await supabase.auth.signInWithPassword({ email, password });
-        if (signInErr) throw signInErr;
-        userId = signInData.user?.id ?? null;
-      }
-      if (!userId) throw new Error('Authentication failed');
-
-      const { error: claimErr } = await supabase
-        .from('app_owner')
-        .insert({ id: 1, user_id: userId });
-      if (claimErr) throw claimErr;
-
+      saveToken(data.token);
       setPassword('');
       setInfo('Ownership claimed. You can now configure the Tip4Serv key.');
-      await resolveStatus(session);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -122,11 +117,11 @@ export default function AdminPage() {
     setInfo(null);
     setBusy(true);
     try {
-      const { error: signInErr } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const data = await adminRequest<{ token: string }>('/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
       });
-      if (signInErr) throw signInErr;
+      saveToken(data.token);
       setPassword('');
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -141,13 +136,14 @@ export default function AdminPage() {
     setInfo(null);
     setBusy(true);
     try {
-      const { error: upsertErr } = await supabase
-        .from('app_settings')
-        .upsert(
-          { key: 'tip4serv_api_key', value: apiKey.trim(), updated_at: new Date().toISOString() },
-          { onConflict: 'key' }
-        );
-      if (upsertErr) throw upsertErr;
+      await adminRequest(
+        '/settings',
+        {
+          method: 'PUT',
+          body: JSON.stringify({ tip4serv_api_key: apiKey.trim() }),
+        },
+        token,
+      );
       setInitialKey(apiKey.trim());
       setInfo('Tip4Serv API key saved. It takes effect immediately.');
     } catch (err) {
@@ -157,8 +153,8 @@ export default function AdminPage() {
     }
   }
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
+  function handleSignOut() {
+    saveToken(null);
   }
 
   return (
@@ -193,7 +189,7 @@ export default function AdminPage() {
                 <div>
                   <p className="font-medium text-[var(--color-text)]">Access denied</p>
                   <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                    This account is not the owner of this site.
+                    Your admin session is invalid or expired.
                   </p>
                 </div>
               </div>
@@ -214,17 +210,10 @@ export default function AdminPage() {
                   Claim this site
                 </h2>
                 <p className="text-sm text-[var(--color-text-muted)] mt-1">
-                  No owner yet. Create the owner account now — this is a
-                  one-time action.
+                  No owner yet. Create the owner account now.
                 </p>
               </div>
-              <Field
-                label="Email"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                required
-              />
+              <Field label="Email" type="email" value={email} onChange={setEmail} required />
               <Field
                 label="Password"
                 type="password"
@@ -247,20 +236,8 @@ export default function AdminPage() {
                   Owner access is required to manage settings.
                 </p>
               </div>
-              <Field
-                label="Email"
-                type="email"
-                value={email}
-                onChange={setEmail}
-                required
-              />
-              <Field
-                label="Password"
-                type="password"
-                value={password}
-                onChange={setPassword}
-                required
-              />
+              <Field label="Email" type="email" value={email} onChange={setEmail} required />
+              <Field label="Password" type="password" value={password} onChange={setPassword} required />
               <SubmitButton busy={busy} icon={<KeyRound className="w-4 h-4" />}>
                 Sign in
               </SubmitButton>
@@ -362,8 +339,8 @@ function SubmitButton({
 }: {
   busy: boolean;
   disabled?: boolean;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+  icon: ReactNode;
+  children: ReactNode;
 }) {
   return (
     <button

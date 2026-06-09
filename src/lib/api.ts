@@ -15,12 +15,27 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
+async function getApiErrorMessage(res: Response, url: string): Promise<string> {
+  const text = await res.text().catch(() => '');
+  if (!text) return `API error ${res.status} on ${url}`;
+
+  try {
+    const data = JSON.parse(text);
+    if (typeof data?.error === 'string') return `${data.error} (${res.status} on ${url})`;
+    if (typeof data?.message === 'string') return `${data.message} (${res.status} on ${url})`;
+    return `${JSON.stringify(data)} (${res.status} on ${url})`;
+  } catch {
+    const preview = text.trim().slice(0, 500);
+    return `API error ${res.status} on ${url}\n${preview}`;
+  }
+}
+
 async function fetchApi<T>(params: Record<string, string>): Promise<T> {
   const searchParams = new URLSearchParams(params);
-  const res = await fetch(`${API_URL}?${searchParams}`, { headers });
+  const url = `${API_URL}?${searchParams}`;
+  const res = await fetch(url, { headers });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `API error: ${res.status}`);
+    throw new Error(await getApiErrorMessage(res, url));
   }
   return res.json();
 }
@@ -163,10 +178,10 @@ const rconHeaders = {
 };
 
 export async function getRconServers(): Promise<{ servers: RconServer[] }> {
-  const res = await fetch(`${RCON_URL}?action=servers`, { headers: rconHeaders });
+  const url = `${RCON_URL}?action=servers`;
+  const res = await fetch(url, { headers: rconHeaders });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `API error: ${res.status}`);
+    throw new Error(await getApiErrorMessage(res, url));
   }
   return res.json();
 }
@@ -176,14 +191,10 @@ export async function getRconPlayers(serverId: string): Promise<{ players: RconP
   const timeout = setTimeout(() => controller.abort(), 45000);
 
   try {
-    const res = await fetch(
-      `${RCON_URL}?action=players&server=${encodeURIComponent(serverId)}`,
-      { headers: rconHeaders, signal: controller.signal }
-    );
+    const url = `${RCON_URL}?action=players&server=${encodeURIComponent(serverId)}`;
+    const res = await fetch(url, { headers: rconHeaders, signal: controller.signal });
     if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      const detail = err.detail ? ` (${err.detail})` : '';
-      throw new Error((err.error || `API error: ${res.status}`) + detail);
+      throw new Error(await getApiErrorMessage(res, url));
     }
     return res.json();
   } catch (e) {
@@ -210,8 +221,7 @@ export async function createCheckout(
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error || `API error: ${res.status}`);
+    throw new Error(await getApiErrorMessage(res, `${API_URL}?${searchParams}`));
   }
   return res.json();
 }

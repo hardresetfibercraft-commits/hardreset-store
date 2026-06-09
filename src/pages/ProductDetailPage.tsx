@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, RefreshCw, Clock, Shield, Zap, Star, CircleCheck as CheckCircle, Circle as XCircle, Settings2, Minus, Plus } from 'lucide-react';
+import ApiErrorNotice from '../components/ui/ApiErrorNotice';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Badge from '../components/ui/Badge';
 import DiscountCountdown from '../components/ui/DiscountCountdown';
@@ -21,6 +22,7 @@ export default function ProductDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [customFieldValues, setCustomFieldValues] = useState<Record<string, string | number>>({});
   const [quantity, setQuantity] = useState(1);
@@ -36,9 +38,11 @@ export default function ProductDetailPage() {
     async function load() {
       if (!slug) return;
       try {
+        setLoadError(null);
         const data = await getProductBySlug(slug);
         setProduct(data);
-      } catch {
+      } catch (err) {
+        setLoadError(err instanceof Error ? err.message : String(err));
         setProduct(null);
       } finally {
         setLoading(false);
@@ -118,6 +122,9 @@ export default function ProductDetailPage() {
     return (
       <div className="pt-32 text-center">
         <div className="max-w-md mx-auto px-4">
+          {loadError && (
+            <ApiErrorNotice title="Erreur chargement produit" message={loadError} />
+          )}
           <h2 className="text-2xl font-bold text-heading mb-4">{t('product.not_found.title')}</h2>
           <p className="text-volcanic-400 mb-8">
             {t('product.not_found.description')}

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, X, ArrowUpDown, LayoutGrid, Rows3 } from 'lucide-react';
 import ProductGrid from '../components/products/ProductGrid';
+import ApiErrorNotice from '../components/ui/ApiErrorNotice';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { getAllProducts, getCategories } from '../lib/api';
 import { getCategoryIcon } from '../lib/categoryIcons';
@@ -19,6 +20,8 @@ export default function ProductsPage() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesError, setCategoriesError] = useState<string | null>(null);
+  const [productsError, setProductsError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('name');
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,9 +30,11 @@ export default function ProductsPage() {
   useEffect(() => {
     async function loadCategories() {
       try {
+        setCategoriesError(null);
         const catRes = await getCategories();
         setCategories(catRes.categories ?? []);
-      } catch {
+      } catch (err) {
+        setCategoriesError(err instanceof Error ? err.message : String(err));
         setCategories([]);
       }
     }
@@ -49,10 +54,14 @@ export default function ProductsPage() {
     async function loadProducts() {
       setLoading(true);
       try {
+        setProductsError(null);
         const products = await getAllProducts(activeCategoryId);
         if (!cancelled) setFilteredProducts(products);
-      } catch {
-        if (!cancelled) setFilteredProducts([]);
+      } catch (err) {
+        if (!cancelled) {
+          setProductsError(err instanceof Error ? err.message : String(err));
+          setFilteredProducts([]);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -145,6 +154,13 @@ export default function ProductsPage() {
             </p>
           )}
         </div>
+
+        {categoriesError && (
+          <ApiErrorNotice title="Erreur chargement categories" message={categoriesError} />
+        )}
+        {productsError && (
+          <ApiErrorNotice title="Erreur chargement produits" message={productsError} />
+        )}
 
         <div className="flex flex-col lg:flex-row gap-8">
           <aside className="lg:w-64 flex-shrink-0">

@@ -5,6 +5,7 @@ import type { StoreInfo } from './types';
 interface StoreContextValue {
   store: StoreInfo | null;
   loading: boolean;
+  error: string | null;
 }
 
 const STORE_CACHE_KEY = 'tip4serv_store_cache_v1';
@@ -29,7 +30,11 @@ function saveCachedStore(info: StoreInfo) {
   }
 }
 
-const StoreContext = createContext<StoreContextValue>({ store: null, loading: true });
+const StoreContext = createContext<StoreContextValue>({
+  store: null,
+  loading: true,
+  error: null,
+});
 
 function stripHtml(html: string): string {
   return html
@@ -73,20 +78,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return cached;
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getStoreInfo()
       .then((info) => {
+        setError(null);
         setStore(info);
         applyStoreSeo(info);
         saveCachedStore(info);
       })
-      .catch(() => {})
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : String(err));
+      })
       .finally(() => setLoading(false));
   }, []);
 
   return (
-    <StoreContext.Provider value={{ store, loading }}>
+    <StoreContext.Provider value={{ store, loading, error }}>
       {children}
     </StoreContext.Provider>
   );

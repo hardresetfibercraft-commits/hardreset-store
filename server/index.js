@@ -13,8 +13,11 @@ const PORT = Number(process.env.PORT || 8787);
 const TIP4SERV_BASE = 'https://api.tip4serv.com/v1';
 const JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'change-this-secret';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const appRoot = path.resolve(__dirname, '..');
 const distDir = path.resolve(__dirname, '../dist');
 const distIndex = path.join(distDir, 'index.html');
+const rootIndex = path.join(appRoot, 'index.html');
+const rootAssets = path.join(appRoot, 'assets');
 
 app.use(cors({ origin: process.env.CORS_ORIGIN || true, credentials: true }));
 app.use(express.json({ limit: '1mb' }));
@@ -306,7 +309,16 @@ app.post('/api/discord-oauth', async (req, res) => {
   }
 });
 
-if (existsSync(distIndex)) {
+if (existsSync(rootIndex) && existsSync(rootAssets)) {
+  app.use('/assets', express.static(rootAssets));
+  app.get('/background.png', (_req, res) => res.sendFile(path.join(appRoot, 'background.png')));
+  app.use((req, res, next) => {
+    if (req.method !== 'GET' || req.path === '/api' || req.path.startsWith('/api/')) {
+      return next();
+    }
+    return res.sendFile(rootIndex);
+  });
+} else if (existsSync(distIndex)) {
   app.use(express.static(distDir));
   app.use((req, res, next) => {
     if (req.method !== 'GET' || req.path === '/api' || req.path.startsWith('/api/')) {

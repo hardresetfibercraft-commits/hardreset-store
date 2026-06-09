@@ -2,25 +2,16 @@
   RewriteEngine On
   RewriteBase /
 
-  # If the request is for an existing file or directory, serve it directly
+  RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-
-  # Route social media crawlers to the SSR meta-tag edge function for the homepage
-  RewriteCond %{HTTP_USER_AGENT} (facebookexternalhit|Facebot|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|WhatsApp|Pinterest|redditbot|Applebot|Googlebot|bingbot) [NC]
-  RewriteCond %{REQUEST_URI} ^/?$
-  RewriteRule ^ https://lpntxqncvgbexesxjprd.supabase.co/functions/v1/og-store?path=%{REQUEST_URI} [P,L]
-
-  # Otherwise, redirect all requests to index.html
-  RewriteRule ^ index.html [QSA,L]
+  RewriteRule . /index.html [L]
 </IfModule>
 
-# Enable gzip compression
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>
 
-# Cache static assets
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType text/css "access plus 1 year"

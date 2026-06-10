@@ -41,30 +41,5 @@ CREATE TABLE IF NOT EXISTS rcon_servers (
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Ascension', '176.9.111.114', 32348, 'mogo69', 1
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Ascension');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Astraeos', '176.9.111.114', 32342, 'mogo69', 2
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Astraeos');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Extinction', '176.9.111.114', 32344, 'mogo69', 3
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Extinction');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Island', '176.9.111.114', 32341, 'mogo69', 4
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Island');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Lost Colony', '176.9.111.114', 32340, 'mogo69', 5
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Lost Colony');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Ragnarok', '176.9.111.114', 32338, 'mogo69', 6
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Ragnarok');
-
-INSERT INTO rcon_servers (map_name, host, rcon_port, rcon_password, sort_order)
-SELECT 'Map Valguero', '176.9.111.114', 32345, 'mogo69', 7
-WHERE NOT EXISTS (SELECT 1 FROM rcon_servers WHERE map_name = 'Map Valguero');
+-- Add RCON servers from your private production database/admin tooling.
+-- Do not commit real hosts or passwords to this schema file.

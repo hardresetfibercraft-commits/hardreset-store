@@ -1,12 +1,15 @@
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION BEGIN
+PassengerAppRoot "/home/bnhs2457/public_html/shadow.ark-france.fr"
+PassengerBaseURI "/"
+PassengerNodejs "/home/bnhs2457/nodevenv/public_html/shadow.ark-france.fr/22/bin/node"
+PassengerAppType node
+PassengerStartupFile server/index.js
+PassengerEnabled on
+# DO NOT REMOVE. CLOUDLINUX PASSENGER CONFIGURATION END
 
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
-</IfModule>
+<Files ".env">
+  Require all denied
+</Files>
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml

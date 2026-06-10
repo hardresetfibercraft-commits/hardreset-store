@@ -2,6 +2,12 @@
 
 Shadow is a modern React storefront for game servers using Tip4Serv. It includes a responsive catalog, product pages, cart drawer, checkout flow, account area, Discord OAuth support, theme switching, translations, and an admin page for storing the Tip4Serv API key server-side.
 
+## Demo
+
+Live demo: [https://shadow.ark-france.fr/](https://shadow.ark-france.fr/)
+
+![Shadow theme showcase](theme_showcase.webp)
+
 ## Stack
 
 - React 19

@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { ChevronDown, CircleAlert as AlertCircle } from 'lucide-react';
 import type { CustomField, CustomRule } from '../../lib/types';
-import { isNiveauHidden, isNiveauField } from '../../lib/utils';
+import { formatMoney, isNiveauHidden, isNiveauField } from '../../lib/utils';
 
 function isSelectType(type: string) {
   return type === 'select' || type === 'selection';
@@ -29,9 +29,10 @@ interface Props {
   values: Record<string, string | number>;
   onChange: (values: Record<string, string | number>) => void;
   rules?: CustomRule[];
+  currency?: string;
 }
 
-export default function CustomFieldsForm({ fields, values, onChange, rules }: Props) {
+export default function CustomFieldsForm({ fields, values, onChange, rules, currency }: Props) {
   const updateValue = useCallback(
     (fieldId: number, value: string | number) => {
       const next = { ...values, [String(fieldId)]: value };
@@ -254,6 +255,7 @@ export default function CustomFieldsForm({ fields, values, onChange, rules }: Pr
           value={currentValue}
           onUpdate={(v) => updateValue(field.id, v)}
           description={description}
+          currency={currency}
         />
       );
     } else if (field.type === 'number') {
@@ -268,6 +270,7 @@ export default function CustomFieldsForm({ fields, values, onChange, rules }: Pr
               : updateValue(field.id, v)
           }
           description={description}
+          currency={currency}
         />
       );
     } else if (field.type === 'checkbox') {
@@ -278,6 +281,7 @@ export default function CustomFieldsForm({ fields, values, onChange, rules }: Pr
           value={currentValue}
           onUpdate={(v) => updateValue(field.id, v)}
           description={description}
+          currency={currency}
         />
       );
     } else {
@@ -288,6 +292,7 @@ export default function CustomFieldsForm({ fields, values, onChange, rules }: Pr
           value={currentValue}
           onUpdate={(v) => updateValue(field.id, v)}
           description={description}
+          currency={currency}
         />
       );
     }
@@ -296,7 +301,15 @@ export default function CustomFieldsForm({ fields, values, onChange, rules }: Pr
   return <div className="space-y-5">{elements}</div>;
 }
 
-function FieldLabel({ field, description }: { field: CustomField; description?: string }) {
+function FieldLabel({
+  field,
+  description,
+  currency,
+}: {
+  field: CustomField;
+  description?: string;
+  currency?: string;
+}) {
   return (
     <div className="mb-2">
       <label className="flex items-center gap-2 text-sm font-medium text-volcanic-200">
@@ -308,7 +321,7 @@ function FieldLabel({ field, description }: { field: CustomField; description?: 
         )}
         {field.price !== undefined && Number(field.price) > 0 && (
           <span className="text-[10px] px-1.5 py-0.5 bg-ark-500/15 text-ark-400 rounded font-medium ml-auto">
-            {field.type === 'number' ? `${Number(field.price).toFixed(2)} \u20AC/pt` : `+${Number(field.price).toFixed(2)} \u20AC`}
+            {field.type === 'number' ? `${formatMoney(Number(field.price), currency)}/pt` : `+${formatMoney(Number(field.price), currency)}`}
           </span>
         )}
       </label>
@@ -324,11 +337,13 @@ function SelectField({
   value,
   onUpdate,
   description,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: string | number) => void;
   description?: string;
+  currency?: string;
 }) {
   const options = [...(field.options || [])].sort((a, b) => Number(a.order) - Number(b.order));
   const selectedOpt = options.find((o) => String(o.id) === String(value));
@@ -336,7 +351,7 @@ function SelectField({
 
   return (
     <div>
-      <FieldLabel field={field} description={description} />
+      <FieldLabel field={field} description={description} currency={currency} />
       <div className="relative">
         <select
           value={value ?? ''}
@@ -353,7 +368,7 @@ function SelectField({
             return (
               <option key={opt.id} value={opt.id}>
                 {opt.name}
-                {optPrice > 0 ? ` (+${optPrice.toFixed(2)} EUR)` : ''}
+                {optPrice > 0 ? ` (+${formatMoney(optPrice, currency)})` : ''}
               </option>
             );
           })}
@@ -362,7 +377,7 @@ function SelectField({
       </div>
       {selectedPrice > 0 && (
         <p className="text-xs text-ark-400 mt-1.5">
-          +{selectedPrice.toFixed(2)} &euro; pour cette option
+          +{formatMoney(selectedPrice, currency)} pour cette option
         </p>
       )}
     </div>
@@ -374,11 +389,13 @@ function SliderField({
   value,
   onUpdate,
   description,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: number) => void;
   description?: string;
+  currency?: string;
 }) {
   const min = Number(field.minimum ?? 0);
   const max = Number(field.maximum ?? 100);
@@ -390,7 +407,7 @@ function SliderField({
 
   return (
     <div>
-      <FieldLabel field={field} description={description} />
+      <FieldLabel field={field} description={description} currency={currency} />
       <div className="space-y-3">
         <div className="flex items-center gap-4">
           <div className="relative flex-1 group">
@@ -423,7 +440,7 @@ function SliderField({
         )}
         {unitPrice > 0 && relExtra > 0 && (
           <p className="text-xs text-ark-400">
-            +{relExtra.toFixed(2)} &euro; (+{numValue - min} pts x {unitPrice.toFixed(2)} &euro;)
+            +{formatMoney(relExtra, currency)} (+{numValue - min} pts x {formatMoney(unitPrice, currency)})
           </p>
         )}
       </div>
@@ -436,11 +453,13 @@ function CheckboxField({
   value,
   onUpdate,
   description,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: number) => void;
   description?: string;
+  currency?: string;
 }) {
   const checked = value === 1 || value === '1' || value === 'true';
 
@@ -467,7 +486,7 @@ function CheckboxField({
         </div>
         {field.price !== undefined && Number(field.price) > 0 && (
           <span className="text-xs text-ark-400 font-medium shrink-0">
-            +{Number(field.price).toFixed(2)} &euro;
+            +{formatMoney(Number(field.price), currency)}
           </span>
         )}
       </label>
@@ -483,15 +502,17 @@ function TextField({
   value,
   onUpdate,
   description,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: string) => void;
   description?: string;
+  currency?: string;
 }) {
   return (
     <div>
-      <FieldLabel field={field} description={description} />
+      <FieldLabel field={field} description={description} currency={currency} />
       <input
         type="text"
         value={value ?? ''}

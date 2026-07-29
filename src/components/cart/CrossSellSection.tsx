@@ -5,8 +5,9 @@ import { getAllProducts, getProductBySlug } from '../../lib/api';
 import { useCart, type CartItem } from '../../lib/cart';
 import { useToast } from '../../lib/toast';
 import type { Product } from '../../lib/types';
-import { getCustomFieldDefaults } from '../../lib/utils';
+import { formatMoney, getCustomFieldDefaults } from '../../lib/utils';
 import { useT } from '../../lib/i18n';
+import { useStore } from '../../lib/store';
 
 interface Props {
   cartItems: CartItem[];
@@ -19,6 +20,8 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
   const { addItem, hasSubscription } = useCart();
   const { addToast } = useToast();
   const t = useT();
+  const { store } = useStore();
+  const currency = store?.currency;
 
   useEffect(() => {
     let cancelled = false;
@@ -208,11 +211,11 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
                 <div className="flex items-center justify-between gap-1">
                   <div className="flex items-baseline gap-1">
                     <span className="text-sm font-bold text-ark-400">
-                      {product.price.toFixed(2)}&euro;
+                      {formatMoney(product.price, currency)}
                     </span>
                     {product.old_price && (
                       <span className="text-[10px] text-volcanic-500 line-through">
-                        {product.old_price.toFixed(2)}
+                        {formatMoney(product.old_price, currency)}
                       </span>
                     )}
                   </div>

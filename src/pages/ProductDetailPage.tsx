@@ -12,7 +12,7 @@ import { useCart } from '../lib/cart';
 import { useToast } from '../lib/toast';
 import { useT } from '../lib/i18n';
 import type { Product } from '../lib/types';
-import { getCustomFieldDefaults, translatePeriodicity } from '../lib/utils';
+import { formatMoney, getCustomFieldDefaults, translatePeriodicity } from '../lib/utils';
 import { computeExtrasPrice } from '../lib/pricing';
 import { useStore } from '../lib/store';
 import { usePageTitle } from '../lib/usePageTitle';
@@ -30,6 +30,7 @@ export default function ProductDetailPage() {
   const { addToast } = useToast();
   const t = useT();
   const { store } = useStore();
+  const currency = store?.currency;
   const checkoutStatus = searchParams.get('checkout');
 
   usePageTitle(product?.name || null);
@@ -271,11 +272,11 @@ export default function ProductDetailPage() {
             <div className="space-y-2">
               <div className="flex items-baseline gap-3">
                 <span className="text-4xl font-bold text-heading">
-                  {(product.price + extrasPrice).toFixed(2)} &euro;
+                  {formatMoney(product.price + extrasPrice, currency)}
                 </span>
                 {product.old_price && (
                   <span className="text-xl text-volcanic-500 line-through">
-                    {product.old_price.toFixed(2)} &euro;
+                    {formatMoney(product.old_price, currency)}
                   </span>
                 )}
                 {product.subscription && product.duration_periodicity && (
@@ -287,7 +288,7 @@ export default function ProductDetailPage() {
               </div>
               {extrasPrice > 0 && (
                 <div className="text-sm text-volcanic-400">
-                  {t('common.base_price_prefix')} {product.price.toFixed(2)} € {t('common.plus_options')} {extrasPrice.toFixed(2)} €
+                  {t('common.base_price_prefix')} {formatMoney(product.price, currency)} {t('common.plus_options')} {formatMoney(extrasPrice, currency)}
                 </div>
               )}
               {product.discount_end && (product.discount_end < 1e12 ? product.discount_end * 1000 : product.discount_end) > Date.now() && (
@@ -388,12 +389,13 @@ export default function ProductDetailPage() {
                   values={customFieldValues}
                   onChange={setCustomFieldValues}
                   rules={product.custom_rules}
+                  currency={currency}
                 />
                 {extrasPrice > 0 && (
                   <div className="mt-4 pt-3 border-t border-volcanic-700/40 flex items-center justify-between">
                     <span className="text-xs text-volcanic-400">{t('common.options')}</span>
                     <span className="text-sm font-semibold text-ark-400">
-                      +{extrasPrice.toFixed(2)} &euro;
+                      +{formatMoney(extrasPrice, currency)}
                     </span>
                   </div>
                 )}
@@ -421,7 +423,7 @@ export default function ProductDetailPage() {
                   className="w-full py-4 text-base rounded-xl font-semibold flex items-center justify-center gap-2 border-2 border-ark-600/40 text-heading bg-volcanic-800/40 hover:bg-volcanic-800/70 hover:border-ark-500/60 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-volcanic-800/40 disabled:hover:border-ark-600/40"
                 >
                   <ShoppingBag className="w-5 h-5" />
-                  {t('product.buy_one_month')} {(product.price + extrasPrice).toFixed(2)} &euro;
+                  {t('product.buy_one_month')} {formatMoney(product.price + extrasPrice, currency)}
                 </button>
                 <button
                   disabled={outOfStock}
@@ -442,7 +444,7 @@ export default function ProductDetailPage() {
                   className="btn-primary w-full py-4 text-base disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <RefreshCw className="w-5 h-5" />
-                  {t('product.subscribe')} {(product.price + extrasPrice).toFixed(2)} &euro;
+                  {t('product.subscribe')} {formatMoney(product.price + extrasPrice, currency)}
                   <span className="text-sm opacity-80">
                     /{product.period_num && product.period_num > 1 ? `${product.period_num} ` : ''}{product.duration_periodicity ? translatePeriodicity(product.duration_periodicity) : 'mois'}
                   </span>

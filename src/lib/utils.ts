@@ -114,6 +114,18 @@ export function stripHtml(html: string): string {
   );
 }
 
+export function formatMoney(amount: number, currency?: string): string {
+  const safeCurrency = (currency || 'EUR').toUpperCase();
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: safeCurrency,
+    }).format(amount);
+  } catch {
+    return `${amount.toFixed(2)} ${safeCurrency}`;
+  }
+}
+
 export function decodeProductData<T extends { name?: string; description?: string }>(
   data: T
 ): T {

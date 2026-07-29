@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { CustomField } from '../../lib/types';
-import { isNiveauHidden, isNiveauField } from '../../lib/utils';
+import { formatMoney, isNiveauHidden, isNiveauField } from '../../lib/utils';
 
 function isSelectType(type: string) {
   return type === 'select' || type === 'selection';
@@ -11,9 +11,10 @@ interface Props {
   fields: CustomField[];
   values: Record<string, string | number>;
   onChange: (values: Record<string, string | number>) => void;
+  currency?: string;
 }
 
-export default function CartItemFields({ fields, values, onChange }: Props) {
+export default function CartItemFields({ fields, values, onChange, currency }: Props) {
   const sorted = useMemo(() => [...fields].sort((a, b) => a.order - b.order), [fields]);
 
   const hideNiveau = useMemo(() => isNiveauHidden(fields, values), [fields, values]);
@@ -116,6 +117,7 @@ export default function CartItemFields({ fields, values, onChange }: Props) {
               field={field}
               value={currentValue}
               onUpdate={(v) => updateValue(field.id, v)}
+              currency={currency}
             />
           );
         }
@@ -137,10 +139,12 @@ function CompactSelect({
   field,
   value,
   onUpdate,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: string | number) => void;
+  currency?: string;
 }) {
   const options = [...(field.options || [])].sort((a, b) => Number(a.order) - Number(b.order));
   const minPrice = Math.min(...options.map((o) => Number(o.price) || 0));
@@ -159,7 +163,7 @@ function CompactSelect({
             return (
               <option key={opt.id} value={opt.id}>
                 {opt.name}
-                {relPrice > 0 ? ` (+${relPrice.toFixed(2)} EUR)` : ''}
+                {relPrice > 0 ? ` (+${formatMoney(relPrice, currency)})` : ''}
               </option>
             );
           })}
@@ -222,10 +226,12 @@ function CompactCheckbox({
   field,
   value,
   onUpdate,
+  currency,
 }: {
   field: CustomField;
   value: string | number | undefined;
   onUpdate: (v: number) => void;
+  currency?: string;
 }) {
   const checked = value === 1 || value === '1' || value === 'true';
 
@@ -246,7 +252,7 @@ function CompactCheckbox({
       </span>
       {field.price !== undefined && Number(field.price) > 0 && (
         <span className="text-[10px] text-ark-400 ml-auto">
-          +{Number(field.price).toFixed(2)} EUR
+          +{formatMoney(Number(field.price), currency)}
         </span>
       )}
     </label>

@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { RefreshCw, Star } from 'lucide-react';
 import type { Product } from '../../lib/types';
-import { translatePeriodicity } from '../../lib/utils';
+import { formatMoney, translatePeriodicity } from '../../lib/utils';
 import Badge from '../ui/Badge';
 import DiscountCountdown from '../ui/DiscountCountdown';
 import { useLanguage } from '../../lib/i18n';
+import { useStore } from '../../lib/store';
 
 interface Props {
   product: Product;
@@ -13,6 +14,8 @@ interface Props {
 
 export default function ProductCard({ product, index = 0 }: Props) {
   const { t, lang } = useLanguage();
+  const { store } = useStore();
+  const currency = store?.currency;
   const isNew = product.slug?.toLowerCase().includes('new') ||
                 product.name?.toLowerCase().includes('nouveau') ||
                 (product.id && product.id > 9000);
@@ -92,11 +95,11 @@ export default function ProductCard({ product, index = 0 }: Props) {
           <div className="flex items-end justify-between">
             <div className="flex items-baseline gap-2">
               <span className="text-xl font-bold text-heading group-hover:text-ark-400 transition-colors duration-200">
-                {product.price.toFixed(2)} &euro;
+                {formatMoney(product.price, currency)}
               </span>
               {product.old_price && (
                 <span className="text-sm text-volcanic-500 line-through">
-                  {product.old_price.toFixed(2)} &euro;
+                  {formatMoney(product.old_price, currency)}
                 </span>
               )}
             </div>

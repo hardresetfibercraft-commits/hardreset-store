@@ -28,6 +28,7 @@ import {
 import { useToast } from '../lib/toast';
 import { useT } from '../lib/i18n';
 import { usePageTitle } from '../lib/usePageTitle';
+import { formatMoney } from '../lib/utils';
 
 type TabKey = 'profile' | 'payments' | 'subscriptions';
 
@@ -42,15 +43,6 @@ function formatDate(ts: number): string {
     });
   } catch {
     return '—';
-  }
-}
-
-function formatAmount(amount: number, currency: string): string {
-  const safeCurrency = (currency || 'EUR').toUpperCase();
-  try {
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: safeCurrency }).format(amount);
-  } catch {
-    return `${amount.toFixed(2)} ${safeCurrency}`;
   }
 }
 
@@ -456,7 +448,7 @@ function PaymentsPanel({
             <div className="flex items-center gap-3 shrink-0">
               <div className="text-right">
                 <div className="text-xl font-bold text-heading">
-                  {formatAmount(p.amount, p.currency)}
+                  {formatMoney(p.amount, p.currency)}
                 </div>
               </div>
               {p.details_page && (
@@ -554,7 +546,7 @@ function SubscriptionsPanel({
             <dl className="grid grid-cols-2 gap-3 text-sm mb-4">
               <div>
                 <dt className="text-[11px] uppercase tracking-wider text-volcanic-500 font-semibold">{t('account.subs.price')}</dt>
-                <dd className="text-heading font-semibold">{formatAmount(s.price, s.currency)}</dd>
+                <dd className="text-heading font-semibold">{formatMoney(s.price, s.currency)}</dd>
               </div>
               <div>
                 <dt className="text-[11px] uppercase tracking-wider text-volcanic-500 font-semibold">{t('account.subs.cycle')}</dt>

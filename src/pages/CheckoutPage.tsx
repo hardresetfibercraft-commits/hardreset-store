@@ -9,7 +9,7 @@ import { usePageTitle } from '../lib/usePageTitle';
 import { computeExtrasPrice } from '../lib/pricing';
 import { getCheckoutIdentifiers, createCheckout } from '../lib/api';
 import { useTip4ServAuth } from '../lib/tip4servAuth';
-import { isNiveauHidden, isNiveauField } from '../lib/utils';
+import { formatMoney, isNiveauHidden, isNiveauField } from '../lib/utils';
 import type { CheckoutBody, CheckoutProduct, CheckoutUser } from '../lib/types';
 
 const IDENTIFIER_KEYS = [
@@ -28,6 +28,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const { items, removeItem, updateQuantity } = useCart();
   const { store } = useStore();
+  const currency = store?.currency;
   const { addToast } = useToast();
   const t = useT();
   usePageTitle(t('checkout.title'));
@@ -511,12 +512,12 @@ export default function CheckoutPage() {
                                 <span className="text-xs text-volcanic-500">{t('checkout.quantity_label')} 1</span>
                               )}
                               <span className="text-lg font-bold text-heading">
-                                {lineTotal.toFixed(2)} &euro;
+                                {formatMoney(lineTotal, currency)}
                               </span>
                             </div>
                             {extras > 0 && (
                               <p className="text-xs text-volcanic-400">
-                                {t('common.base_price_prefix')} {item.product.price.toFixed(2)} € {t('common.plus_options')} {extras.toFixed(2)} €
+                                {t('common.base_price_prefix')} {formatMoney(item.product.price, currency)} {t('common.plus_options')} {formatMoney(extras, currency)}
                               </p>
                             )}
                           </div>
@@ -650,12 +651,12 @@ export default function CheckoutPage() {
                             )}
                           </span>
                           <span className="text-heading font-medium shrink-0">
-                            {lineTotal.toFixed(2)} &euro;
+                            {formatMoney(lineTotal, currency)}
                           </span>
                         </div>
                         {extras > 0 && (
                           <div className="text-xs text-volcanic-500 pl-2">
-                            {t('common.base_short')} {item.product.price.toFixed(2)} € {t('common.plus_options')} {extras.toFixed(2)} €
+                            {t('common.base_short')} {formatMoney(item.product.price, currency)} {t('common.plus_options')} {formatMoney(extras, currency)}
                           </div>
                         )}
                       </div>
@@ -667,7 +668,7 @@ export default function CheckoutPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-volcanic-300 font-medium">{t('common.total')}</span>
                     <span className="text-2xl font-bold text-heading">
-                      {cartTotal.toFixed(2)} &euro;
+                      {formatMoney(cartTotal, currency)}
                     </span>
                   </div>
                   <p className="text-xs text-volcanic-500 mt-2">
@@ -715,7 +716,7 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <Lock className="w-5 h-5" />
-                      {t('checkout.button.pay')} {cartTotal.toFixed(2)} &euro;
+                      {t('checkout.button.pay')} {formatMoney(cartTotal, currency)}
                     </>
                   )}
                 </button>

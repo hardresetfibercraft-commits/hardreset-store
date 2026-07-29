@@ -4,11 +4,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../lib/cart';
 import { useToast } from '../../lib/toast';
 import { computeExtrasPrice } from '../../lib/pricing';
-import { isNiveauHidden, isNiveauField } from '../../lib/utils';
+import { formatMoney, isNiveauHidden, isNiveauField } from '../../lib/utils';
 import type { CustomField } from '../../lib/types';
 import CrossSellSection from './CrossSellSection';
 import CartItemFields from './CartItemFields';
 import { useT } from '../../lib/i18n';
+import { useStore } from '../../lib/store';
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, updateCustomFields, clearCart } = useCart();
@@ -16,6 +17,8 @@ export default function CartDrawer() {
   const { addToast } = useToast();
   const navigate = useNavigate();
   const t = useT();
+  const { store } = useStore();
+  const currency = store?.currency;
 
   useEffect(() => {
     if (isOpen) {
@@ -167,10 +170,10 @@ export default function CartDrawer() {
                               )}
                             </div>
                             <p className="text-sm font-bold text-ark-400 mt-1">
-                              {unitPrice.toFixed(2)} &euro;
+                              {formatMoney(unitPrice, currency)}
                               {extras > 0 && (
                                 <span className="text-xs text-volcanic-500 font-normal ml-1">
-                                  ({t('cart.price.base_label')} {item.product.price.toFixed(2)} + {t('cart.price.options_label')} {extras.toFixed(2)})
+                                  ({t('cart.price.base_label')} {formatMoney(item.product.price, currency)} + {t('cart.price.options_label')} {formatMoney(extras, currency)})
                                 </span>
                               )}
                             </p>
@@ -206,7 +209,7 @@ export default function CartDrawer() {
                           </button>
                           {item.quantity > 1 && (
                             <span className="text-xs text-volcanic-500 ml-auto">
-                              {t('common.subtotal')} {(unitPrice * item.quantity).toFixed(2)} &euro;
+                              {t('common.subtotal')} {formatMoney(unitPrice * item.quantity, currency)}
                             </span>
                           )}
                         </div>
@@ -232,6 +235,7 @@ export default function CartDrawer() {
                                 fields={item.product.custom_fields}
                                 values={item.customFieldValues}
                                 onChange={(vals) => updateCustomFields(item.id, vals)}
+                                currency={currency}
                               />
                             ) : (
                               Object.keys(item.customFieldValues).length > 0 && (
@@ -264,11 +268,11 @@ export default function CartDrawer() {
 
             {items.length > 0 && (
               <div className="border-t border-volcanic-800/50 p-5 space-y-4 bg-volcanic-900/80 backdrop-blur-lg">
-                <DiscountProgressBar total={cartTotal} />
+                <DiscountProgressBar total={cartTotal} currency={currency} />
                 <div className="flex items-center justify-between">
                   <span className="text-volcanic-400">{t('common.total')}</span>
                   <span className="text-xl font-bold text-heading">
-                    {cartTotal.toFixed(2)} &euro;
+                    {formatMoney(cartTotal, currency)}
                   </span>
                 </div>
                 <button
@@ -279,7 +283,7 @@ export default function CartDrawer() {
                   className="btn-primary w-full py-3.5"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  {t('cart.checkout_button')} ({cartTotal.toFixed(2)} &euro;)
+                  {t('cart.checkout_button')} ({formatMoney(cartTotal, currency)})
                 </button>
               </div>
             )}
@@ -295,7 +299,7 @@ const DISCOUNT_TIERS = [
   { threshold: 100, discount: 20 },
 ];
 
-function DiscountProgressBar({ total }: { total: number }) {
+function DiscountProgressBar({ total, currency }: { total: number; currency?: string }) {
   const t = useT();
   const currentTier = DISCOUNT_TIERS.filter((tier) => total >= tier.threshold).pop();
   const nextTier = DISCOUNT_TIERS.find((tier) => total < tier.threshold);
@@ -324,7 +328,7 @@ function DiscountProgressBar({ total }: { total: number }) {
         )}
         {nextTier && (
           <span className="text-volcanic-500">
-            {t('cart.discount.remaining_prefix')} <span className="text-ark-400 font-medium">{remaining.toFixed(2)}&euro;</span> {t('cart.discount.remaining_suffix')} -{nextTier.discount}%
+            {t('cart.discount.remaining_prefix')} <span className="text-ark-400 font-medium">{formatMoney(remaining, currency)}</span> {t('cart.discount.remaining_suffix')} -{nextTier.discount}%
           </span>
         )}
         {!nextTier && (
@@ -368,7 +372,7 @@ function DiscountProgressBar({ total }: { total: number }) {
             <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${
               total >= tier.threshold ? 'bg-emerald-400' : 'bg-volcanic-600'
             }`} />
-            {tier.threshold}&euro; = -{tier.discount}%
+            {formatMoney(tier.threshold, currency)} = -{tier.discount}%
           </div>
         ))}
       </div>

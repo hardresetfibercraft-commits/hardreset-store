@@ -12,30 +12,38 @@ import { useStore } from '../lib/store';
 
 export default function HomePage() {
   usePageTitle();
+
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [contentError, setContentError] = useState<string | null>(null);
+
   const { error: storeError } = useStore();
 
   useEffect(() => {
     async function load() {
       try {
         setContentError(null);
+
         const [products, catRes] = await Promise.all([
           getAllProducts(),
           getCategories(),
         ]);
+
         setProducts(products);
         setCategories(catRes.categories ?? []);
       } catch (err) {
-        setContentError(err instanceof Error ? err.message : String(err));
+        setContentError(
+          err instanceof Error ? err.message : String(err)
+        );
+
         setProducts([]);
         setCategories([]);
       } finally {
         setLoading(false);
       }
     }
+
     load();
   }, []);
 
@@ -50,17 +58,28 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
       <Hero />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {storeError && (
-          <ApiErrorNotice title="Erreur boutique Tip4Serv" message={storeError} />
+          <ApiErrorNotice
+            title="Tip4Serv Store Error"
+            message={storeError}
+          />
         )}
+
         {contentError && (
-          <ApiErrorNotice title="Erreur chargement produits/categories" message={contentError} />
+          <ApiErrorNotice
+            title="Unable to Load Products or Categories"
+            message={contentError}
+          />
         )}
       </div>
-      <LatestProducts products={products} />
+
       <FeaturedProducts products={products} />
+
       <CategorySection categories={categories} />
+
+      <LatestProducts products={products} />
     </div>
   );
 }

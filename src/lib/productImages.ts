@@ -77,7 +77,7 @@ const productImageOverrides: Record<string, string> = {
 
   'structure bundle': '/images/store/structure-bundle.webp',
 
-  // DEDIS
+  // DEDIS / RESOURCES
   'advanced rifle dedi': '/images/store/advanced-rifle-dedi.webp',
   'arb dedi': '/images/store/advanced-rifle-dedi.webp',
   'advanced rifle bullet dedi': '/images/store/advanced-rifle-dedi.webp',
@@ -127,6 +127,7 @@ function normalizeProductKey(value?: string | null): string {
     .trim()
     .replace(/\s+/g, ' ');
 }
+
 export function getProductImage(product: {
   name?: string | null;
   slug?: string | null;
@@ -145,24 +146,27 @@ export function getProductImage(product: {
   const combined = `${name} ${slug}`;
   const category = `${categoryName} ${categorySlug}`;
 
+  // =========================================================
   // SINGLE DINOS
+  // =========================================================
+
   if (
     category.includes('single dinos') ||
     category.includes('single dino')
   ) {
+    // Tek creatures use the Level 450 Tek image
     if (combined.includes('tek')) {
       return '/images/store/single-dino-450-tek.webp';
     }
 
+    // All other Single Dinos use Level 375
     return '/images/store/single-dino-375.webp';
   }
 
-  // VIP SECTION
-  if (category.includes('vip')) {
-    return '/images/store/vip-room-bundle.webp';
-  }
-
+  // =========================================================
   // EXACT LOCAL IMAGE MATCHES
+  // =========================================================
+
   const candidates = [slug, name];
 
   for (const key of candidates) {
@@ -173,33 +177,89 @@ export function getProductImage(product: {
     }
   }
 
+  // =========================================================
   // BLUEPRINTS
+  // =========================================================
+
+  // Saddle BPs
   if (
     combined.includes('saddle') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
+  // Weapon BPs
   if (
     combined.includes('weapon') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
+  // Armor BPs
   if (
     combined.includes('armor') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/armor-bundle.webp';
   }
 
-  // RESOURCE / DEDI PRODUCTS
+  // Tek BPs
+  if (
+    combined.includes('tek') &&
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
+  ) {
+    return '/images/store/25-tek-blueprints.webp';
+  }
+
+  // =========================================================
+  // VIP PRODUCTS
+  // =========================================================
+
+  // Tribe Log Bundle
+  if (
+    combined.includes('tribe') &&
+    combined.includes('log')
+  ) {
+    return '/images/store/tribelog-bundle.webp';
+  }
+
+  // Also catch "Tribelog"
+  if (combined.includes('tribelog')) {
+    return '/images/store/tribelog-bundle.webp';
+  }
+
+  // VIP Room Bundle
+  if (
+    combined.includes('vip') &&
+    combined.includes('room')
+  ) {
+    return '/images/store/vip-room-bundle.webp';
+  }
+
+  // =========================================================
+  // RESOURCES / DEDIS
+  // =========================================================
+
   if (
     category.includes('resource') ||
-    category.includes('dedi')
+    category.includes('dedi') ||
+    category.includes('dedicated')
   ) {
+    // ARB
     if (
       combined.includes('advanced rifle') ||
       combined.includes('arb')
@@ -207,66 +267,93 @@ export function getProductImage(product: {
       return '/images/store/advanced-rifle-dedi.webp';
     }
 
-    if (combined.includes('black pearl')) {
+    // Black Pearls
+    if (
+      combined.includes('black pearl') ||
+      combined.includes('blackpearls')
+    ) {
       return '/images/store/black-pearl-dedi.webp';
     }
 
-    if (combined.includes('cementing paste')) {
+    // Cementing Paste
+    if (
+      combined.includes('cementing paste') ||
+      combined.includes('paste')
+    ) {
       return '/images/store/cementing-paste-dedi.webp';
     }
 
+    // Electronics
     if (combined.includes('electronics')) {
       return '/images/store/electronics-dedi.webp';
     }
 
+    // IMPORTANT: Shards BEFORE Element
     if (
       combined.includes('element shard') ||
-      combined.includes('shards')
+      combined.includes('shard')
     ) {
       return '/images/store/element-shard-dedi.webp';
     }
 
+    // Element
     if (combined.includes('element')) {
       return '/images/store/element-dedi.webp';
     }
 
+    // Crystal
     if (combined.includes('crystal')) {
       return '/images/store/crystal-dedi.webp';
     }
 
+    // Fiber
     if (combined.includes('fiber')) {
       return '/images/store/fiber-dedi.webp';
     }
 
-    if (
-      combined.includes('hard polymer') ||
-      combined.includes('polymer')
-    ) {
+    // Polymer
+    if (combined.includes('polymer')) {
       return '/images/store/hard-polymer-dedi.webp';
     }
 
+    // Metal
     if (combined.includes('metal')) {
       return '/images/store/metal-dedi.webp';
     }
 
+    // Obsidian
     if (combined.includes('obsidian')) {
       return '/images/store/obsidian-dedi.webp';
     }
 
+    // Oil
     if (combined.includes('oil')) {
       return '/images/store/oil-dedi.webp';
     }
 
+    // Rockets
     if (combined.includes('rocket')) {
       return '/images/store/rocket-dedi.webp';
     }
 
+    // C4
     if (combined.includes('c4')) {
       return '/images/store/c4-dedi.webp';
     }
+
+    // Power + Ammo
+    if (
+      combined.includes('power') &&
+      combined.includes('ammo')
+    ) {
+      return '/images/store/power-and-ammo-dedi-bundle.webp';
+    }
   }
 
+  // =========================================================
   // DIRECT DINO FALLBACKS
+  // =========================================================
+
   if (
     combined.includes('375') &&
     combined.includes('dino')
@@ -281,6 +368,10 @@ export function getProductImage(product: {
   ) {
     return '/images/store/single-dino-450-tek.webp';
   }
+
+  // =========================================================
+  // FINAL FALLBACK
+  // =========================================================
 
   return product.image ?? undefined;
 }

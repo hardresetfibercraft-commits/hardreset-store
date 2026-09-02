@@ -151,12 +151,10 @@ export function getProductImage(product: {
     category.includes('single dinos') ||
     category.includes('single dino')
   ) {
-    // Tek creatures use the Level 450 Tek image
     if (combined.includes('tek')) {
       return '/images/store/single-dino-450-tek.webp';
     }
 
-    // Every other single dino uses the Level 375 image
     return '/images/store/single-dino-375.webp';
   }
 
@@ -173,37 +171,97 @@ export function getProductImage(product: {
 
   // FLEXIBLE BLUEPRINT MATCHING
 
-  // Saddle BPs
   if (
     combined.includes('saddle') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
-  // Weapon BPs
   if (
     combined.includes('weapon') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
-  // Armor BPs
   if (
     combined.includes('armor') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/armor-bundle.webp';
+  }
+
+  // RESOURCE / DEDI PRODUCTS
+  if (
+    category.includes('resource') ||
+    category.includes('dedi')
+  ) {
+    if (
+      combined.includes('advanced rifle') ||
+      combined.includes('arb')
+    ) {
+      return '/images/store/advanced-rifle-dedi.webp';
+    }
+
+    if (combined.includes('black pearl')) {
+      return '/images/store/black-pearl-dedi.webp';
+    }
+
+    if (combined.includes('cementing paste')) {
+      return '/images/store/cementing-paste-dedi.webp';
+    }
+
+    if (combined.includes('electronics')) {
+      return '/images/store/electronics-dedi.webp';
+    }
+
+    // Shards MUST come before regular Element
+    if (
+      combined.includes('element shard') ||
+      combined.includes('shards')
+    ) {
+      return '/images/store/element-shard-dedi.webp';
+    }
+
+    if (combined.includes('element')) {
+      return '/images/store/element-dedi.webp';
+    }
+
+    if (combined.includes('crystal')) {
+      return '/images/store/crystal-dedi.webp';
+    }
+
+    if (combined.includes('fiber')) {
+      return '/images/store/fiber-dedi.webp';
+    }
+
+    if (
+      combined.includes('hard polymer') ||
+      combined.includes('polymer')
+    ) {
+      return '/images/store/hard-polymer-dedi.webp';
+    }
+
+    if (combined.includes('metal')) {
+      return '/images/store/metal-dedi.webp';
+    }
+
+    if (combined.includes('obsidian')) {
+      return '/images/store/obsidian-dedi.webp';
+    }
+
+    if (combined.includes('oil')) {
+      return '/images/store/oil-dedi.webp';
+    }
+
+    if (combined.includes('rocket')) {
+      return '/images/store/rocket-dedi.webp';
+    }
+
+    if (combined.includes('c4')) {
+      return '/images/store/c4-dedi.webp';
+    }
   }
 
   // Direct Level 375 product fallback
@@ -223,6 +281,5 @@ export function getProductImage(product: {
     return '/images/store/single-dino-450-tek.webp';
   }
 
-  // Tip4Serv fallback
   return product.image ?? undefined;
 }

@@ -1,5 +1,8 @@
 const productImageOverrides: Record<string, string> = {
+  // =========================================================
   // BLUEPRINTS
+  // =========================================================
+
   '10 saddle blueprint bundle': '/images/store/10-saddle-blueprint-bundle.webp',
   '10 saddle blueprints': '/images/store/10-saddle-blueprint-bundle.webp',
   '10 saddle bps': '/images/store/10-saddle-blueprint-bundle.webp',
@@ -13,17 +16,26 @@ const productImageOverrides: Record<string, string> = {
   'saddle blueprint bundle': '/images/store/saddle-blueprint-bundle.webp',
   'saddle bundle': '/images/store/saddle-blueprint-bundle.webp',
 
+  // =========================================================
   // AUTO CRAFT BPS
+  // =========================================================
+
   'ammo auto craft bps': '/images/store/ammo-auto-craft-bps.webp',
   'auto craft bps': '/images/store/ammo-auto-craft-bps.webp',
   'auto craft bp': '/images/store/ammo-auto-craft-bps.webp',
+  'auto craft advanced rifle bullet': '/images/store/ammo-auto-craft-bps.webp',
+  'auto craft element shard': '/images/store/ammo-auto-craft-bps.webp',
 
-  // ASCENSION / XP
+  // =========================================================
+  // ASCENSION / XP / MAX SURVIVOR
+  // =========================================================
+
   'max ascension': '/images/store/ascension-bundle.webp',
   'ascension unlock': '/images/store/ascension-bundle.webp',
   'ascension bundle': '/images/store/ascension-bundle.webp',
 
   'max xp': '/images/store/max-level-230.webp',
+  'max xp level 230': '/images/store/max-level-230.webp',
   'max experience': '/images/store/max-level-230.webp',
   'max level 230': '/images/store/max-level-230.webp',
   'level 230': '/images/store/max-level-230.webp',
@@ -31,12 +43,23 @@ const productImageOverrides: Record<string, string> = {
 
   'max survivor': '/images/store/max-survivor-bundle.webp',
   'max survivor bundle': '/images/store/max-survivor-bundle.webp',
+  'max survivor ascension level 230': '/images/store/max-survivor-bundle.webp',
 
-  'full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
-  '8 player full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
+  '2 player max survivor': '/images/store/max-survivor-bundle.webp',
+  '3 player max survivor': '/images/store/max-survivor-bundle.webp',
+  '4 player max survivor': '/images/store/max-survivor-bundle.webp',
+  '5 player max survivor': '/images/store/max-survivor-bundle.webp',
+  '6 player max survivor': '/images/store/max-survivor-bundle.webp',
+  '7 player max survivor': '/images/store/max-survivor-bundle.webp',
+
   '8 player max survivor': '/images/store/full-tribe-max-survivor.webp',
+  '8 player full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
+  'full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
 
+  // =========================================================
   // DINOS
+  // =========================================================
+
   'single dino 375': '/images/store/single-dino-375.webp',
   'level 375 dino': '/images/store/single-dino-375.webp',
   '375 dino': '/images/store/single-dino-375.webp',
@@ -48,7 +71,10 @@ const productImageOverrides: Record<string, string> = {
   'tek dino collection': '/images/store/tek-dino-collection.webp',
   'wyvern collection': '/images/store/wyvern-collection.webp',
 
+  // =========================================================
   // DINO / WAR BUNDLES
+  // =========================================================
+
   'air force': '/images/store/air-force-bundle.webp',
   'air force bundle': '/images/store/air-force-bundle.webp',
 
@@ -67,7 +93,10 @@ const productImageOverrides: Record<string, string> = {
   'full tribe bundle': '/images/store/full-tribe-bundle.webp',
   'full tribe dino bundle': '/images/store/full-tribe-bundle.webp',
 
+  // =========================================================
   // SPECIAL BUNDLES
+  // =========================================================
+
   'armor bundle': '/images/store/armor-bundle.webp',
 
   'farm bundle': '/images/store/farm-bundle.webp',
@@ -85,19 +114,29 @@ const productImageOverrides: Record<string, string> = {
   'vip room bundle': '/images/store/vip-room-bundle.webp',
   'vip bundle': '/images/store/vip-room-bundle.webp',
 
+  // =========================================================
   // CAVE EDITS
+  // =========================================================
+
   'cave edits': '/images/store/cave-edits.webp',
   'cave edit': '/images/store/cave-edits.webp',
 
   'cave edits bundle': '/images/store/cave-edits-bundle.webp',
   'cave edit bundle': '/images/store/cave-edits-bundle.webp',
 
+  // =========================================================
   // STRUCTURES
+  // =========================================================
+
   'single structure': '/images/store/single-structure.webp',
   'structures': '/images/store/single-structure.webp',
+
   'structure bundle': '/images/store/structure-bundle.webp',
 
+  // =========================================================
   // DEDIS / RESOURCES
+  // =========================================================
+
   'advanced rifle dedi': '/images/store/advanced-rifle-dedi.webp',
   'arb dedi': '/images/store/advanced-rifle-dedi.webp',
   'advanced rifle bullet dedi': '/images/store/advanced-rifle-dedi.webp',
@@ -174,10 +213,12 @@ export function getProductImage(product: {
     category.includes('single dinos') ||
     category.includes('single dino')
   ) {
+    // Tek dinos use the 450 Tek image
     if (combined.includes('tek')) {
       return '/images/store/single-dino-450-tek.webp';
     }
 
+    // All other dinos use 375
     return '/images/store/single-dino-375.webp';
   }
 
@@ -185,8 +226,8 @@ export function getProductImage(product: {
   // ASCENSION / MAX SURVIVOR / XP
   // =========================================================
 
-  // Full Tribe / 8 Player Max Survivor
-  // This MUST be before the regular Max Survivor rule.
+  // Full Tribe / 8 Player
+  // MUST come before general Max Survivor matching.
   if (
     combined.includes('max survivor') &&
     (
@@ -198,7 +239,7 @@ export function getProductImage(product: {
     return '/images/store/full-tribe-max-survivor.webp';
   }
 
-  // Single through 7-player Max Survivor packages
+  // 1-7 Player Max Survivor packages
   if (combined.includes('max survivor')) {
     return '/images/store/max-survivor-bundle.webp';
   }
@@ -213,7 +254,7 @@ export function getProductImage(product: {
     return '/images/store/max-level-230.webp';
   }
 
-  // Ascension-only products
+  // Ascension only
   if (
     combined.includes('max ascension') ||
     combined.includes('ascension unlock') ||
@@ -314,7 +355,7 @@ export function getProductImage(product: {
   // VIP PRODUCTS
   // =========================================================
 
-  // Tribe Log Bundle
+  // Tribe Log
   if (
     combined.includes('tribe') &&
     combined.includes('log')
@@ -326,7 +367,7 @@ export function getProductImage(product: {
     return '/images/store/tribelog-bundle.webp';
   }
 
-  // VIP Room Bundle
+  // VIP Room
   if (
     combined.includes('vip') &&
     combined.includes('room')
@@ -372,7 +413,8 @@ export function getProductImage(product: {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // IMPORTANT: Shards BEFORE Element
+    // IMPORTANT:
+    // Shards must come before regular Element.
     if (
       combined.includes('element shard') ||
       combined.includes('shard')

@@ -18,6 +18,21 @@ const productImageOverrides: Record<string, string> = {
   'auto craft bps': '/images/store/ammo-auto-craft-bps.webp',
   'auto craft bp': '/images/store/ammo-auto-craft-bps.webp',
 
+  // ASCENSION / XP
+  'max ascension': '/images/store/ascension-unlock.webp',
+  'ascension unlock': '/images/store/ascension-unlock.webp',
+  'ascension bundle': '/images/store/ascension-unlock.webp',
+
+  'max xp': '/images/store/max-level-230.webp',
+  'max level 230': '/images/store/max-level-230.webp',
+  'level 230': '/images/store/max-level-230.webp',
+
+  'max survivor': '/images/store/max-survivor-bundle.webp',
+  'max survivor bundle': '/images/store/max-survivor-bundle.webp',
+
+  'full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
+  '8 player full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
+
   // DINOS
   'single dino 375': '/images/store/single-dino-375.webp',
   'level 375 dino': '/images/store/single-dino-375.webp',
@@ -51,7 +66,7 @@ const productImageOverrides: Record<string, string> = {
 
   // SPECIAL BUNDLES
   'armor bundle': '/images/store/armor-bundle.webp',
-  'ascension bundle': '/images/store/ascension-bundle.webp',
+
   'farm bundle': '/images/store/farm-bundle.webp',
 
   'mutation package': '/images/store/mutation-package.webp',
@@ -158,6 +173,50 @@ export function getProductImage(product: {
   }
 
   // =========================================================
+  // ASCENSION / MAX SURVIVOR / XP
+  // =========================================================
+
+  // 8 Player / Full Tribe Max Survivor
+  // MUST come before general Max Survivor rule
+  if (
+    combined.includes('max survivor') &&
+    (
+      combined.includes('full tribe') ||
+      combined.includes('8 player') ||
+      combined.includes('8 man')
+    )
+  ) {
+    return '/images/store/full-tribe-max-survivor.webp';
+  }
+
+  // Single + 2-7 Player Max Survivor packages
+  if (combined.includes('max survivor')) {
+    return '/images/store/max-survivor-bundle.webp';
+  }
+
+  // Max XP / Level 230 packages
+  if (
+    combined.includes('max xp') ||
+    combined.includes('max experience') ||
+    combined.includes('max level 230') ||
+    combined.includes('level 230 xp')
+  ) {
+    return '/images/store/max-level-230.webp';
+  }
+
+  // Ascension-only packages
+  if (
+    combined.includes('max ascension') ||
+    combined.includes('ascension unlock') ||
+    (
+      combined.includes('ascension') &&
+      !combined.includes('survivor')
+    )
+  ) {
+    return '/images/store/ascension-unlock.webp';
+  }
+
+  // =========================================================
   // CAVE EDITS
   // =========================================================
 
@@ -200,28 +259,40 @@ export function getProductImage(product: {
 
   if (
     combined.includes('saddle') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
   if (
     combined.includes('weapon') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
   if (
     combined.includes('armor') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/armor-bundle.webp';
   }
 
   if (
     combined.includes('tek') &&
-    (combined.includes('blueprint') || combined.includes('bp'))
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
   ) {
     return '/images/store/25-tek-blueprints.webp';
   }
@@ -282,6 +353,7 @@ export function getProductImage(product: {
       return '/images/store/electronics-dedi.webp';
     }
 
+    // Shards before regular Element
     if (
       combined.includes('element shard') ||
       combined.includes('shard')

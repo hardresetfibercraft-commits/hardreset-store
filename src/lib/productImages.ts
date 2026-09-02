@@ -13,6 +13,11 @@ const productImageOverrides: Record<string, string> = {
   'saddle blueprint bundle': '/images/store/saddle-blueprint-bundle.webp',
   'saddle bundle': '/images/store/saddle-blueprint-bundle.webp',
 
+  // AUTO CRAFT BPS
+  'ammo auto craft bps': '/images/store/ammo-auto-craft-bps.webp',
+  'auto craft bps': '/images/store/ammo-auto-craft-bps.webp',
+  'auto craft bp': '/images/store/ammo-auto-craft-bps.webp',
+
   // DINOS
   'single dino 375': '/images/store/single-dino-375.webp',
   'level 375 dino': '/images/store/single-dino-375.webp',
@@ -179,45 +184,44 @@ export function getProductImage(product: {
   }
 
   // =========================================================
+  // AUTO CRAFT BLUEPRINTS
+  // =========================================================
+
+  if (
+    combined.includes('auto craft') ||
+    combined.includes('autocraft')
+  ) {
+    return '/images/store/ammo-auto-craft-bps.webp';
+  }
+
+  // =========================================================
   // BLUEPRINTS
   // =========================================================
 
   if (
     combined.includes('saddle') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
   if (
     combined.includes('weapon') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
   if (
     combined.includes('armor') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/armor-bundle.webp';
   }
 
   if (
     combined.includes('tek') &&
-    (
-      combined.includes('blueprint') ||
-      combined.includes('bp')
-    )
+    (combined.includes('blueprint') || combined.includes('bp'))
   ) {
     return '/images/store/25-tek-blueprints.webp';
   }
@@ -278,7 +282,6 @@ export function getProductImage(product: {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // Shards must be checked before Element
     if (
       combined.includes('element shard') ||
       combined.includes('shard')

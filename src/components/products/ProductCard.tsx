@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { RefreshCw, Star } from 'lucide-react';
 import type { Product } from '../../lib/types';
 import { formatMoney, translatePeriodicity } from '../../lib/utils';
+import { getProductImage } from '../../lib/productImages';
 import Badge from '../ui/Badge';
 import DiscountCountdown from '../ui/DiscountCountdown';
 import { useLanguage } from '../../lib/i18n';
@@ -16,6 +17,9 @@ export default function ProductCard({ product, index = 0 }: Props) {
   const { t, lang } = useLanguage();
   const { store } = useStore();
   const currency = store?.currency;
+
+  const productImage = getProductImage(product);
+
   const isNew = product.slug?.toLowerCase().includes('new') ||
                 product.name?.toLowerCase().includes('nouveau') ||
                 (product.id && product.id > 9000);
@@ -31,9 +35,9 @@ export default function ProductCard({ product, index = 0 }: Props) {
       style={{ animationDelay: `${index * 60}ms`, animationFillMode: 'both' }}
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-volcanic-800">
-        {product.image ? (
+        {productImage ? (
           <img
-            src={product.image}
+            src={productImage}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             loading="lazy"
@@ -109,9 +113,16 @@ export default function ProductCard({ product, index = 0 }: Props) {
               </span>
             )}
           </div>
-          {product.discount_end && (product.discount_end < 1e12 ? product.discount_end * 1000 : product.discount_end) > Date.now() && (
-            <DiscountCountdown endTimestamp={product.discount_end} compact />
-          )}
+
+          {product.discount_end &&
+            (product.discount_end < 1e12
+              ? product.discount_end * 1000
+              : product.discount_end) > Date.now() && (
+              <DiscountCountdown
+                endTimestamp={product.discount_end}
+                compact
+              />
+            )}
         </div>
       </div>
     </Link>

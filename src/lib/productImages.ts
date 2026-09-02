@@ -46,16 +46,13 @@ const productImageOverrides: Record<string, string> = {
 
   // SPECIAL BUNDLES
   'armor bundle': '/images/store/armor-bundle.webp',
-
   'ascension bundle': '/images/store/ascension-bundle.webp',
-
   'farm bundle': '/images/store/farm-bundle.webp',
 
   'mutation package': '/images/store/mutation-package.webp',
   'mutation package bundle': '/images/store/mutation-package.webp',
 
   'rebuild bundle': '/images/store/rebuild-bundle.webp',
-
   'tool bundle': '/images/store/tool-bundle.webp',
 
   'tribelog bundle': '/images/store/tribelog-bundle.webp',
@@ -90,9 +87,7 @@ const productImageOverrides: Record<string, string> = {
   'paste dedi': '/images/store/cementing-paste-dedi.webp',
 
   'crystal dedi': '/images/store/crystal-dedi.webp',
-
   'electronics dedi': '/images/store/electronics-dedi.webp',
-
   'element dedi': '/images/store/element-dedi.webp',
 
   'element shard dedi': '/images/store/element-shard-dedi.webp',
@@ -105,9 +100,7 @@ const productImageOverrides: Record<string, string> = {
   'polymer dedi': '/images/store/hard-polymer-dedi.webp',
 
   'metal dedi': '/images/store/metal-dedi.webp',
-
   'obsidian dedi': '/images/store/obsidian-dedi.webp',
-
   'oil dedi': '/images/store/oil-dedi.webp',
 
   'rocket dedi': '/images/store/rocket-dedi.webp',
@@ -132,22 +125,43 @@ export function getProductImage(product: {
   name?: string;
   slug?: string;
   image?: string;
+  category?: {
+    name?: string;
+    slug?: string;
+  };
 }): string | undefined {
   const name = normalizeProductKey(product.name);
   const slug = normalizeProductKey(product.slug);
 
-  const combined = `${name} ${slug}`;
+  const categoryName = normalizeProductKey(product.category?.name);
+  const categorySlug = normalizeProductKey(product.category?.slug);
 
-  // Force local dino images first
-  if (combined.includes('375')) {
+  const category = `${categoryName} ${categorySlug}`;
+
+  // ALL products inside the Single Dinos category are Level 375 dinos
+  if (
+    category.includes('single dinos') ||
+    category.includes('single dino')
+  ) {
     return '/images/store/single-dino-375.webp';
   }
 
-  if (combined.includes('450') && combined.includes('tek')) {
+  // Keep direct 375 matching too
+  if (name.includes('375') || slug.includes('375')) {
+    return '/images/store/single-dino-375.webp';
+  }
+
+  // Tek 450 direct matching
+  const combined = `${name} ${slug}`;
+
+  if (
+    combined.includes('450') &&
+    combined.includes('tek')
+  ) {
     return '/images/store/single-dino-450-tek.webp';
   }
 
-  // Exact local image matches
+  // All other local overrides
   const candidates = [slug, name];
 
   for (const key of candidates) {
@@ -158,6 +172,6 @@ export function getProductImage(product: {
     }
   }
 
-  // Fall back to Tip4Serv image
+  // Tip4Serv fallback
   return product.image;
 }

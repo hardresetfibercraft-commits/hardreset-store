@@ -8,6 +8,7 @@ import { useT } from '../lib/i18n';
 import { usePageTitle } from '../lib/usePageTitle';
 import { computeExtrasPrice } from '../lib/pricing';
 import { getCheckoutIdentifiers, createCheckout } from '../lib/api';
+import { getProductImage } from '../lib/productImages';
 import { useTip4ServAuth } from '../lib/tip4servAuth';
 import { formatMoney, isNiveauHidden, isNiveauField } from '../lib/utils';
 import type { CheckoutBody, CheckoutProduct, CheckoutUser } from '../lib/types';
@@ -431,7 +432,7 @@ export default function CheckoutPage() {
                   const extras = computeExtrasPrice(item.product.custom_fields, item.customFieldValues);
                   const unitPrice = item.product.price + extras;
                   const lineTotal = unitPrice * item.quantity;
-                  const img = item.product.image || item.product.gallery?.[0];
+                  const img = getProductImage(item.product) || item.product.gallery?.[0];
 
                   return (
                     <div key={item.id} className="glass-card p-4">

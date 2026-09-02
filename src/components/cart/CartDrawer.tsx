@@ -10,6 +10,7 @@ import CrossSellSection from './CrossSellSection';
 import CartItemFields from './CartItemFields';
 import { useT } from '../../lib/i18n';
 import { useStore } from '../../lib/store';
+import { getProductImage } from '../../lib/productImages';
 
 export default function CartDrawer() {
   const { items, isOpen, closeCart, removeItem, updateQuantity, updateCustomFields, clearCart } = useCart();
@@ -118,7 +119,7 @@ export default function CartDrawer() {
                   {items.map((item, idx) => {
                     const extras = computeExtrasPrice(item.product.custom_fields, item.customFieldValues);
                     const unitPrice = item.product.price + extras;
-                    const img = item.product.image || item.product.gallery?.[0];
+                    const img = getProductImage(item.product) || item.product.gallery?.[0];
 
                     return (
                       <div

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Star, Sparkles, Loader as Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAllProducts, getProductBySlug } from '../../lib/api';
+import { getProductImage } from '../../lib/productImages';
 import { useCart, type CartItem } from '../../lib/cart';
 import { useToast } from '../../lib/toast';
 import type { Product } from '../../lib/types';
@@ -25,71 +26,150 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
 
   useEffect(() => {
     let cancelled = false;
+
     async function load() {
       try {
         const products = await getAllProducts();
-        if (!cancelled) setAllProducts(products);
+
+        if (!cancelled) {
+          setAllProducts(products);
+        }
       } catch {
-        if (!cancelled) setAllProducts([]);
+        if (!cancelled) {
+          setAllProducts([]);
+        }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
+
     load();
-    return () => { cancelled = true; };
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const suggestions = useMemo(() => {
-    if (allProducts.length === 0) return [];
+    if (allProducts.length === 0) {
+      return [];
+    }
 
-    const cartProductIds = new Set(cartItems.map((i) => i.product.id));
+    const cartProductIds = new Set(
+      cartItems.map((item) => item.product.id)
+    );
+
     const cartCategoryIds = new Set(
-      cartItems.map((i) => i.product.category?.id).filter(Boolean)
+      cartItems
+        .map((item) => item.product.category?.id)
+        .filter(Boolean)
     );
 
     const available = allProducts.filter(
-      (p) => p.status && !cartProductIds.has(p.id)
+      (product) =>
+        product.status &&
+        !cartProductIds.has(product.id)
     );
 
     const sameCat = available.filter(
-      (p) => p.category && cartCategoryIds.has(p.category.id)
+      (product) =>
+        product.category &&
+        cartCategoryIds.has(product.category.id)
     );
+
     const otherCat = available.filter(
-      (p) => !p.category || !cartCategoryIds.has(p.category.id)
+      (product) =>
+        !product.category ||
+        !cartCategoryIds.has(product.category.id)
     );
 
     const featuredFirst = (list: Product[]) =>
-      [...list].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+      [...list].sort(
+        (a, b) =>
+          (b.featured ? 1 : 0) -
+          (a.featured ? 1 : 0)
+      );
 
-    return [...featuredFirst(sameCat), ...featuredFirst(otherCat)].slice(0, 6);
+    return [
+      ...featuredFirst(sameCat),
+      ...featuredFirst(otherCat),
+    ].slice(0, 6);
   }, [allProducts, cartItems]);
 
-  const [addingIds, setAddingIds] = useState<Set<number>>(new Set());
+  const [addingIds, setAddingIds] =
+    useState<Set<number>>(new Set());
 
   async function handleQuickAdd(product: Product) {
-    if (addingIds.has(product.id)) return;
-    setAddingIds((prev) => new Set(prev).add(product.id));
+    if (addingIds.has(product.id)) {
+      return;
+    }
+
+    setAddingIds((prev) => {
+      const next = new Set(prev);
+      next.add(product.id);
+      return next;
+    });
+
     try {
-      const fullProduct = await getProductBySlug(product.slug);
-      const defaults = fullProduct.custom_fields?.length
-        ? getCustomFieldDefaults(fullProduct.custom_fields)
-        : {};
-      const result = addItem(fullProduct, defaults, fullProduct.server_options?.[0]?.id);
+      const fullProduct =
+        await getProductBySlug(product.slug);
+
+      const defaults =
+        fullProduct.custom_fields?.length
+          ? getCustomFieldDefaults(
+              fullProduct.custom_fields
+            )
+          : {};
+
+      const result = addItem(
+        fullProduct,
+        defaults,
+        fullProduct.server_options?.[0]?.id
+      );
+
       if (!result.ok) {
-        addToast(t('cart.toast.subscription_conflict'), 'error');
+        addToast(
+          t('cart.toast.subscription_conflict'),
+          'error'
+        );
         return;
       }
-      addToast(t('cart.toast.item_added', { name: fullProduct.name }), 'success');
+
+      addToast(
+        t('cart.toast.item_added', {
+          name: fullProduct.name,
+        }),
+        'success'
+      );
     } catch {
-      const defaults = product.custom_fields?.length
-        ? getCustomFieldDefaults(product.custom_fields)
-        : {};
-      const result = addItem(product, defaults);
+      const defaults =
+        product.custom_fields?.length
+          ? getCustomFieldDefaults(
+              product.custom_fields
+            )
+          : {};
+
+      const result = addItem(
+        product,
+        defaults
+      );
+
       if (!result.ok) {
-        addToast(t('cart.toast.subscription_conflict'), 'error');
+        addToast(
+          t('cart.toast.subscription_conflict'),
+          'error'
+        );
         return;
       }
-      addToast(t('cart.toast.item_added', { name: product.name }), 'success');
+
+      addToast(
+        t('cart.toast.item_added', {
+          name: product.name,
+        }),
+        'success'
+      );
     } finally {
       setAddingIds((prev) => {
         const next = new Set(prev);
@@ -99,37 +179,88 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
     }
   }
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const scrollRef =
+    useRef<HTMLDivElement>(null);
+
+  const [canScrollLeft, setCanScrollLeft] =
+    useState(false);
+
+  const [canScrollRight, setCanScrollRight] =
+    useState(false);
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
-    if (!el) return;
+
+    if (!el) {
+      return;
+    }
+
     setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+
+    setCanScrollRight(
+      el.scrollLeft + el.clientWidth <
+        el.scrollWidth - 4
+    );
   }, []);
 
   useEffect(() => {
     updateScrollState();
+
     const el = scrollRef.current;
-    if (!el) return;
-    el.addEventListener('scroll', updateScrollState, { passive: true });
-    window.addEventListener('resize', updateScrollState);
+
+    if (!el) {
+      return;
+    }
+
+    el.addEventListener(
+      'scroll',
+      updateScrollState,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      'resize',
+      updateScrollState
+    );
+
     return () => {
-      el.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
+      el.removeEventListener(
+        'scroll',
+        updateScrollState
+      );
+
+      window.removeEventListener(
+        'resize',
+        updateScrollState
+      );
     };
   }, [updateScrollState, suggestions.length]);
 
   function scrollBy(direction: 1 | -1) {
     const el = scrollRef.current;
-    if (!el) return;
-    const amount = Math.max(160, Math.floor(el.clientWidth * 0.7));
-    el.scrollBy({ left: direction * amount, behavior: 'smooth' });
+
+    if (!el) {
+      return;
+    }
+
+    const amount = Math.max(
+      160,
+      Math.floor(el.clientWidth * 0.7)
+    );
+
+    el.scrollBy({
+      left: direction * amount,
+      behavior: 'smooth',
+    });
   }
 
-  if (loading || suggestions.length === 0 || hasSubscription) return null;
+  if (
+    loading ||
+    suggestions.length === 0 ||
+    hasSubscription
+  ) {
+    return null;
+  }
 
   return (
     <div className="border-t border-volcanic-800/50 bg-volcanic-950/40">
@@ -138,33 +269,38 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
           <Sparkles className="w-4 h-4 text-ark-500" />
           {t('crosssell.title')}
         </h3>
+
         <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => scrollBy(-1)}
             disabled={!canScrollLeft}
-            aria-label="Précédent"
+            aria-label="Previous"
             className="w-7 h-7 flex items-center justify-center rounded-md bg-volcanic-800/60 border border-volcanic-700/60 text-volcanic-300 hover:bg-volcanic-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
+
           <button
             type="button"
             onClick={() => scrollBy(1)}
             disabled={!canScrollRight}
-            aria-label="Suivant"
+            aria-label="Next"
             className="w-7 h-7 flex items-center justify-center rounded-md bg-volcanic-800/60 border border-volcanic-700/60 text-volcanic-300 hover:bg-volcanic-700 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
+
       <div
         ref={scrollRef}
         className="flex gap-3 overflow-x-auto px-4 pb-4 scrollbar-thin scroll-smooth"
       >
         {suggestions.map((product) => {
-          const img = product.image || product.gallery?.[0];
+          const img =
+            getProductImage(product) ||
+            product.gallery?.[0];
 
           return (
             <div
@@ -188,12 +324,15 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
                       <Star className="w-6 h-6 text-volcanic-600" />
                     </div>
                   )}
+
                   <div className="absolute inset-0 bg-gradient-to-t from-volcanic-950/60 to-transparent" />
-                  {product.percent_off && product.percent_off > 0 && (
-                    <span className="absolute top-1.5 left-1.5 text-[10px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded">
-                      -{product.percent_off}%
-                    </span>
-                  )}
+
+                  {product.percent_off &&
+                    product.percent_off > 0 && (
+                      <span className="absolute top-1.5 left-1.5 text-[10px] font-bold bg-red-500 text-white px-1.5 py-0.5 rounded">
+                        -{product.percent_off}%
+                      </span>
+                    )}
                 </div>
               </Link>
 
@@ -211,20 +350,33 @@ export default function CrossSellSection({ cartItems, onClose }: Props) {
                 <div className="flex items-center justify-between gap-1">
                   <div className="flex items-baseline gap-1">
                     <span className="text-sm font-bold text-ark-400">
-                      {formatMoney(product.price, currency)}
+                      {formatMoney(
+                        product.price,
+                        currency
+                      )}
                     </span>
+
                     {product.old_price && (
                       <span className="text-[10px] text-volcanic-500 line-through">
-                        {formatMoney(product.old_price, currency)}
+                        {formatMoney(
+                          product.old_price,
+                          currency
+                        )}
                       </span>
                     )}
                   </div>
 
                   <button
-                    onClick={() => handleQuickAdd(product)}
-                    disabled={addingIds.has(product.id)}
+                    onClick={() =>
+                      handleQuickAdd(product)
+                    }
+                    disabled={addingIds.has(
+                      product.id
+                    )}
                     className="w-6 h-6 flex items-center justify-center rounded-md bg-ark-600/20 text-ark-500 hover:bg-ark-600 hover:text-white disabled:opacity-50 disabled:cursor-wait transition-all duration-200"
-                    title={t('crosssell.add_tooltip')}
+                    title={t(
+                      'crosssell.add_tooltip'
+                    )}
                   >
                     {addingIds.has(product.id) ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />

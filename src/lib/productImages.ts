@@ -19,19 +19,22 @@ const productImageOverrides: Record<string, string> = {
   'auto craft bp': '/images/store/ammo-auto-craft-bps.webp',
 
   // ASCENSION / XP
-  'max ascension': '/images/store/ascension-unlock.webp',
-  'ascension unlock': '/images/store/ascension-unlock.webp',
-  'ascension bundle': '/images/store/ascension-unlock.webp',
+  'max ascension': '/images/store/ascension-bundle.webp',
+  'ascension unlock': '/images/store/ascension-bundle.webp',
+  'ascension bundle': '/images/store/ascension-bundle.webp',
 
   'max xp': '/images/store/max-level-230.webp',
+  'max experience': '/images/store/max-level-230.webp',
   'max level 230': '/images/store/max-level-230.webp',
   'level 230': '/images/store/max-level-230.webp',
+  'level 230 xp': '/images/store/max-level-230.webp',
 
   'max survivor': '/images/store/max-survivor-bundle.webp',
   'max survivor bundle': '/images/store/max-survivor-bundle.webp',
 
   'full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
   '8 player full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
+  '8 player max survivor': '/images/store/full-tribe-max-survivor.webp',
 
   // DINOS
   'single dino 375': '/images/store/single-dino-375.webp',
@@ -73,6 +76,7 @@ const productImageOverrides: Record<string, string> = {
   'mutation package bundle': '/images/store/mutation-package.webp',
 
   'rebuild bundle': '/images/store/rebuild-bundle.webp',
+
   'tool bundle': '/images/store/tool-bundle.webp',
 
   'tribelog bundle': '/images/store/tribelog-bundle.webp',
@@ -99,13 +103,16 @@ const productImageOverrides: Record<string, string> = {
   'advanced rifle bullet dedi': '/images/store/advanced-rifle-dedi.webp',
 
   'black pearl dedi': '/images/store/black-pearl-dedi.webp',
+
   'c4 dedi': '/images/store/c4-dedi.webp',
 
   'cementing paste dedi': '/images/store/cementing-paste-dedi.webp',
   'paste dedi': '/images/store/cementing-paste-dedi.webp',
 
   'crystal dedi': '/images/store/crystal-dedi.webp',
+
   'electronics dedi': '/images/store/electronics-dedi.webp',
+
   'element dedi': '/images/store/element-dedi.webp',
 
   'element shard dedi': '/images/store/element-shard-dedi.webp',
@@ -118,7 +125,9 @@ const productImageOverrides: Record<string, string> = {
   'polymer dedi': '/images/store/hard-polymer-dedi.webp',
 
   'metal dedi': '/images/store/metal-dedi.webp',
+
   'obsidian dedi': '/images/store/obsidian-dedi.webp',
+
   'oil dedi': '/images/store/oil-dedi.webp',
 
   'rocket dedi': '/images/store/rocket-dedi.webp',
@@ -176,8 +185,8 @@ export function getProductImage(product: {
   // ASCENSION / MAX SURVIVOR / XP
   // =========================================================
 
-  // 8 Player / Full Tribe Max Survivor
-  // MUST come before general Max Survivor rule
+  // Full Tribe / 8 Player Max Survivor
+  // This MUST be before the regular Max Survivor rule.
   if (
     combined.includes('max survivor') &&
     (
@@ -189,12 +198,12 @@ export function getProductImage(product: {
     return '/images/store/full-tribe-max-survivor.webp';
   }
 
-  // Single + 2-7 Player Max Survivor packages
+  // Single through 7-player Max Survivor packages
   if (combined.includes('max survivor')) {
     return '/images/store/max-survivor-bundle.webp';
   }
 
-  // Max XP / Level 230 packages
+  // Max XP / Level 230
   if (
     combined.includes('max xp') ||
     combined.includes('max experience') ||
@@ -204,7 +213,7 @@ export function getProductImage(product: {
     return '/images/store/max-level-230.webp';
   }
 
-  // Ascension-only packages
+  // Ascension-only products
   if (
     combined.includes('max ascension') ||
     combined.includes('ascension unlock') ||
@@ -213,7 +222,7 @@ export function getProductImage(product: {
       !combined.includes('survivor')
     )
   ) {
-    return '/images/store/ascension-unlock.webp';
+    return '/images/store/ascension-bundle.webp';
   }
 
   // =========================================================
@@ -257,6 +266,7 @@ export function getProductImage(product: {
   // BLUEPRINTS
   // =========================================================
 
+  // Saddle BPs
   if (
     combined.includes('saddle') &&
     (
@@ -267,6 +277,7 @@ export function getProductImage(product: {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
+  // Weapon BPs
   if (
     combined.includes('weapon') &&
     (
@@ -277,6 +288,7 @@ export function getProductImage(product: {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
+  // Armor BPs
   if (
     combined.includes('armor') &&
     (
@@ -287,6 +299,7 @@ export function getProductImage(product: {
     return '/images/store/armor-bundle.webp';
   }
 
+  // Tek BPs
   if (
     combined.includes('tek') &&
     (
@@ -301,6 +314,7 @@ export function getProductImage(product: {
   // VIP PRODUCTS
   // =========================================================
 
+  // Tribe Log Bundle
   if (
     combined.includes('tribe') &&
     combined.includes('log')
@@ -312,6 +326,7 @@ export function getProductImage(product: {
     return '/images/store/tribelog-bundle.webp';
   }
 
+  // VIP Room Bundle
   if (
     combined.includes('vip') &&
     combined.includes('room')
@@ -328,6 +343,7 @@ export function getProductImage(product: {
     category.includes('dedi') ||
     category.includes('dedicated')
   ) {
+    // ARB
     if (
       combined.includes('advanced rifle') ||
       combined.includes('arb')
@@ -335,6 +351,7 @@ export function getProductImage(product: {
       return '/images/store/advanced-rifle-dedi.webp';
     }
 
+    // Black Pearls
     if (
       combined.includes('black pearl') ||
       combined.includes('blackpearls')
@@ -342,6 +359,7 @@ export function getProductImage(product: {
       return '/images/store/black-pearl-dedi.webp';
     }
 
+    // Cementing Paste
     if (
       combined.includes('cementing paste') ||
       combined.includes('paste')
@@ -349,11 +367,12 @@ export function getProductImage(product: {
       return '/images/store/cementing-paste-dedi.webp';
     }
 
+    // Electronics
     if (combined.includes('electronics')) {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // Shards before regular Element
+    // IMPORTANT: Shards BEFORE Element
     if (
       combined.includes('element shard') ||
       combined.includes('shard')
@@ -361,42 +380,52 @@ export function getProductImage(product: {
       return '/images/store/element-shard-dedi.webp';
     }
 
+    // Element
     if (combined.includes('element')) {
       return '/images/store/element-dedi.webp';
     }
 
+    // Crystal
     if (combined.includes('crystal')) {
       return '/images/store/crystal-dedi.webp';
     }
 
+    // Fiber
     if (combined.includes('fiber')) {
       return '/images/store/fiber-dedi.webp';
     }
 
+    // Polymer
     if (combined.includes('polymer')) {
       return '/images/store/hard-polymer-dedi.webp';
     }
 
+    // Metal
     if (combined.includes('metal')) {
       return '/images/store/metal-dedi.webp';
     }
 
+    // Obsidian
     if (combined.includes('obsidian')) {
       return '/images/store/obsidian-dedi.webp';
     }
 
+    // Oil
     if (combined.includes('oil')) {
       return '/images/store/oil-dedi.webp';
     }
 
+    // Rockets
     if (combined.includes('rocket')) {
       return '/images/store/rocket-dedi.webp';
     }
 
+    // C4
     if (combined.includes('c4')) {
       return '/images/store/c4-dedi.webp';
     }
 
+    // Power + Ammo
     if (
       combined.includes('power') &&
       combined.includes('ammo')

@@ -8,6 +8,7 @@ import DiscountCountdown from '../components/ui/DiscountCountdown';
 import CustomFieldsForm from '../components/products/CustomFieldsForm';
 import RelatedProducts from '../components/products/RelatedProducts';
 import { getProductBySlug } from '../lib/api';
+import { getProductImage } from '../lib/productImages';
 import { useCart } from '../lib/cart';
 import { useToast } from '../lib/toast';
 import { useT } from '../lib/i18n';
@@ -63,7 +64,12 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (!product) return;
-    const image = product.image || product.gallery?.[0] || '';
+    const mappedImage = getProductImage(product);
+    const image = mappedImage
+      ? mappedImage.startsWith('http')
+        ? mappedImage
+        : `${window.location.origin}${mappedImage}`
+      : product.gallery?.[0] || '';
     const description = product.small_description?.replace(/<[^>]*>/g, '').slice(0, 160) || '';
     const storeName = store?.title || 'Boutique';
     const title = `${product.name} | ${storeName}`;
@@ -142,10 +148,15 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = product.gallery?.length
-    ? product.gallery
-    : product.image
-    ? [product.image]
+  const productImage = getProductImage(product);
+
+  const images = productImage
+    ? [
+        productImage,
+        ...(product.gallery ?? []).filter(
+          (img) => img !== productImage && img !== product.image
+        ),
+      ]
     : [];
 
   function dismissCheckoutStatus() {

@@ -160,7 +160,7 @@ export function getProductImage(product: {
     return '/images/store/single-dino-375.webp';
   }
 
-  // Check our exact local image mappings
+  // EXACT LOCAL IMAGE MATCHES
   const candidates = [slug, name];
 
   for (const key of candidates) {
@@ -171,8 +171,46 @@ export function getProductImage(product: {
     }
   }
 
+  // FLEXIBLE BLUEPRINT MATCHING
+
+  // Saddle BPs
+  if (
+    combined.includes('saddle') &&
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
+  ) {
+    return '/images/store/saddle-blueprint-bundle.webp';
+  }
+
+  // Weapon BPs
+  if (
+    combined.includes('weapon') &&
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
+  ) {
+    return '/images/store/25-weapon-blueprints.webp';
+  }
+
+  // Armor BPs
+  if (
+    combined.includes('armor') &&
+    (
+      combined.includes('blueprint') ||
+      combined.includes('bp')
+    )
+  ) {
+    return '/images/store/armor-bundle.webp';
+  }
+
   // Direct Level 375 product fallback
-  if (combined.includes('375') && combined.includes('dino')) {
+  if (
+    combined.includes('375') &&
+    combined.includes('dino')
+  ) {
     return '/images/store/single-dino-375.webp';
   }
 

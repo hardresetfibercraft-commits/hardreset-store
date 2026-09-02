@@ -46,16 +46,13 @@ const productImageOverrides: Record<string, string> = {
 
   // SPECIAL BUNDLES
   'armor bundle': '/images/store/armor-bundle.webp',
-
   'ascension bundle': '/images/store/ascension-bundle.webp',
-
   'farm bundle': '/images/store/farm-bundle.webp',
 
   'mutation package': '/images/store/mutation-package.webp',
   'mutation package bundle': '/images/store/mutation-package.webp',
 
   'rebuild bundle': '/images/store/rebuild-bundle.webp',
-
   'tool bundle': '/images/store/tool-bundle.webp',
 
   'tribelog bundle': '/images/store/tribelog-bundle.webp',
@@ -74,7 +71,6 @@ const productImageOverrides: Record<string, string> = {
   // STRUCTURES
   'single structure': '/images/store/single-structure.webp',
   'structures': '/images/store/single-structure.webp',
-
   'structure bundle': '/images/store/structure-bundle.webp',
 
   // DEDIS / RESOURCES
@@ -83,16 +79,13 @@ const productImageOverrides: Record<string, string> = {
   'advanced rifle bullet dedi': '/images/store/advanced-rifle-dedi.webp',
 
   'black pearl dedi': '/images/store/black-pearl-dedi.webp',
-
   'c4 dedi': '/images/store/c4-dedi.webp',
 
   'cementing paste dedi': '/images/store/cementing-paste-dedi.webp',
   'paste dedi': '/images/store/cementing-paste-dedi.webp',
 
   'crystal dedi': '/images/store/crystal-dedi.webp',
-
   'electronics dedi': '/images/store/electronics-dedi.webp',
-
   'element dedi': '/images/store/element-dedi.webp',
 
   'element shard dedi': '/images/store/element-shard-dedi.webp',
@@ -105,9 +98,7 @@ const productImageOverrides: Record<string, string> = {
   'polymer dedi': '/images/store/hard-polymer-dedi.webp',
 
   'metal dedi': '/images/store/metal-dedi.webp',
-
   'obsidian dedi': '/images/store/obsidian-dedi.webp',
-
   'oil dedi': '/images/store/oil-dedi.webp',
 
   'rocket dedi': '/images/store/rocket-dedi.webp',
@@ -154,13 +145,23 @@ export function getProductImage(product: {
     category.includes('single dinos') ||
     category.includes('single dino')
   ) {
-    // Tek creatures use the Level 450 Tek image
     if (combined.includes('tek')) {
       return '/images/store/single-dino-450-tek.webp';
     }
 
-    // All other Single Dinos use Level 375
     return '/images/store/single-dino-375.webp';
+  }
+
+  // =========================================================
+  // CAVE EDITS
+  // =========================================================
+
+  if (category.includes('cave edit')) {
+    if (combined.includes('bundle')) {
+      return '/images/store/cave-edits-bundle.webp';
+    }
+
+    return '/images/store/cave-edits.webp';
   }
 
   // =========================================================
@@ -181,7 +182,6 @@ export function getProductImage(product: {
   // BLUEPRINTS
   // =========================================================
 
-  // Saddle BPs
   if (
     combined.includes('saddle') &&
     (
@@ -192,7 +192,6 @@ export function getProductImage(product: {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
-  // Weapon BPs
   if (
     combined.includes('weapon') &&
     (
@@ -203,7 +202,6 @@ export function getProductImage(product: {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
-  // Armor BPs
   if (
     combined.includes('armor') &&
     (
@@ -214,7 +212,6 @@ export function getProductImage(product: {
     return '/images/store/armor-bundle.webp';
   }
 
-  // Tek BPs
   if (
     combined.includes('tek') &&
     (
@@ -229,7 +226,6 @@ export function getProductImage(product: {
   // VIP PRODUCTS
   // =========================================================
 
-  // Tribe Log Bundle
   if (
     combined.includes('tribe') &&
     combined.includes('log')
@@ -237,12 +233,10 @@ export function getProductImage(product: {
     return '/images/store/tribelog-bundle.webp';
   }
 
-  // Also catch "Tribelog"
   if (combined.includes('tribelog')) {
     return '/images/store/tribelog-bundle.webp';
   }
 
-  // VIP Room Bundle
   if (
     combined.includes('vip') &&
     combined.includes('room')
@@ -259,7 +253,6 @@ export function getProductImage(product: {
     category.includes('dedi') ||
     category.includes('dedicated')
   ) {
-    // ARB
     if (
       combined.includes('advanced rifle') ||
       combined.includes('arb')
@@ -267,7 +260,6 @@ export function getProductImage(product: {
       return '/images/store/advanced-rifle-dedi.webp';
     }
 
-    // Black Pearls
     if (
       combined.includes('black pearl') ||
       combined.includes('blackpearls')
@@ -275,7 +267,6 @@ export function getProductImage(product: {
       return '/images/store/black-pearl-dedi.webp';
     }
 
-    // Cementing Paste
     if (
       combined.includes('cementing paste') ||
       combined.includes('paste')
@@ -283,12 +274,11 @@ export function getProductImage(product: {
       return '/images/store/cementing-paste-dedi.webp';
     }
 
-    // Electronics
     if (combined.includes('electronics')) {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // IMPORTANT: Shards BEFORE Element
+    // Shards must be checked before Element
     if (
       combined.includes('element shard') ||
       combined.includes('shard')
@@ -296,52 +286,42 @@ export function getProductImage(product: {
       return '/images/store/element-shard-dedi.webp';
     }
 
-    // Element
     if (combined.includes('element')) {
       return '/images/store/element-dedi.webp';
     }
 
-    // Crystal
     if (combined.includes('crystal')) {
       return '/images/store/crystal-dedi.webp';
     }
 
-    // Fiber
     if (combined.includes('fiber')) {
       return '/images/store/fiber-dedi.webp';
     }
 
-    // Polymer
     if (combined.includes('polymer')) {
       return '/images/store/hard-polymer-dedi.webp';
     }
 
-    // Metal
     if (combined.includes('metal')) {
       return '/images/store/metal-dedi.webp';
     }
 
-    // Obsidian
     if (combined.includes('obsidian')) {
       return '/images/store/obsidian-dedi.webp';
     }
 
-    // Oil
     if (combined.includes('oil')) {
       return '/images/store/oil-dedi.webp';
     }
 
-    // Rockets
     if (combined.includes('rocket')) {
       return '/images/store/rocket-dedi.webp';
     }
 
-    // C4
     if (combined.includes('c4')) {
       return '/images/store/c4-dedi.webp';
     }
 
-    // Power + Ammo
     if (
       combined.includes('power') &&
       combined.includes('ammo')

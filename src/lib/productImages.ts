@@ -127,7 +127,6 @@ function normalizeProductKey(value?: string | null): string {
     .trim()
     .replace(/\s+/g, ' ');
 }
-
 export function getProductImage(product: {
   name?: string | null;
   slug?: string | null;
@@ -158,6 +157,11 @@ export function getProductImage(product: {
     return '/images/store/single-dino-375.webp';
   }
 
+  // VIP SECTION
+  if (category.includes('vip')) {
+    return '/images/store/vip-room-bundle.webp';
+  }
+
   // EXACT LOCAL IMAGE MATCHES
   const candidates = [slug, name];
 
@@ -169,8 +173,7 @@ export function getProductImage(product: {
     }
   }
 
-  // FLEXIBLE BLUEPRINT MATCHING
-
+  // BLUEPRINTS
   if (
     combined.includes('saddle') &&
     (combined.includes('blueprint') || combined.includes('bp'))
@@ -216,7 +219,6 @@ export function getProductImage(product: {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // Shards MUST come before regular Element
     if (
       combined.includes('element shard') ||
       combined.includes('shards')
@@ -264,7 +266,7 @@ export function getProductImage(product: {
     }
   }
 
-  // Direct Level 375 product fallback
+  // DIRECT DINO FALLBACKS
   if (
     combined.includes('375') &&
     combined.includes('dino')
@@ -272,7 +274,6 @@ export function getProductImage(product: {
     return '/images/store/single-dino-375.webp';
   }
 
-  // Direct Level 450 Tek product fallback
   if (
     combined.includes('450') &&
     combined.includes('tek') &&

@@ -119,6 +119,15 @@ const productImageOverrides: Record<string, string> = {
   'power ammo dedi bundle': '/images/store/power-and-ammo-dedi-bundle.webp',
 };
 
+function normalizeProductKey(value?: string): string {
+  return (value ?? '')
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
 export function getProductImage(product: {
   name?: string;
   slug?: string;
@@ -129,6 +138,7 @@ export function getProductImage(product: {
     normalizeProductKey(product.name),
   ];
 
+  // Exact matches first
   for (const key of candidates) {
     const override = productImageOverrides[key];
 
@@ -137,15 +147,21 @@ export function getProductImage(product: {
     }
   }
 
+  // Flexible dino matching
   for (const key of candidates) {
     if (key.includes('375') && key.includes('dino')) {
       return '/images/store/single-dino-375.webp';
     }
 
-    if (key.includes('450') && key.includes('tek') && key.includes('dino')) {
+    if (
+      key.includes('450') &&
+      key.includes('tek') &&
+      key.includes('dino')
+    ) {
       return '/images/store/single-dino-450-tek.webp';
     }
   }
 
+  // Fall back to the Tip4Serv image if no local override exists
   return product.image;
 }

@@ -57,6 +57,14 @@ const productImageOverrides: Record<string, string> = {
   'full tribe max survivor': '/images/store/full-tribe-max-survivor.webp',
 
   // =========================================================
+  // SERVICES
+  // =========================================================
+
+  'admin base build service': '/images/store/admin-base-build-service.webp',
+  'admin base building service': '/images/store/admin-base-build-service.webp',
+  'base build service': '/images/store/admin-base-build-service.webp',
+
+  // =========================================================
   // DINOS
   // =========================================================
 
@@ -213,12 +221,10 @@ export function getProductImage(product: {
     category.includes('single dinos') ||
     category.includes('single dino')
   ) {
-    // Tek dinos use the 450 Tek image
     if (combined.includes('tek')) {
       return '/images/store/single-dino-450-tek.webp';
     }
 
-    // All other dinos use 375
     return '/images/store/single-dino-375.webp';
   }
 
@@ -227,7 +233,6 @@ export function getProductImage(product: {
   // =========================================================
 
   // Full Tribe / 8 Player
-  // MUST come before general Max Survivor matching.
   if (
     combined.includes('max survivor') &&
     (
@@ -264,6 +269,29 @@ export function getProductImage(product: {
     )
   ) {
     return '/images/store/ascension-bundle.webp';
+  }
+
+  // =========================================================
+  // ADMIN BASE BUILD SERVICE
+  // =========================================================
+
+  if (
+    combined.includes('admin') &&
+    combined.includes('base') &&
+    (
+      combined.includes('build') ||
+      combined.includes('building')
+    )
+  ) {
+    return '/images/store/admin-base-build-service.webp';
+  }
+
+  if (
+    combined.includes('base') &&
+    combined.includes('build') &&
+    combined.includes('service')
+  ) {
+    return '/images/store/admin-base-build-service.webp';
   }
 
   // =========================================================
@@ -307,7 +335,6 @@ export function getProductImage(product: {
   // BLUEPRINTS
   // =========================================================
 
-  // Saddle BPs
   if (
     combined.includes('saddle') &&
     (
@@ -318,7 +345,6 @@ export function getProductImage(product: {
     return '/images/store/saddle-blueprint-bundle.webp';
   }
 
-  // Weapon BPs
   if (
     combined.includes('weapon') &&
     (
@@ -329,7 +355,6 @@ export function getProductImage(product: {
     return '/images/store/25-weapon-blueprints.webp';
   }
 
-  // Armor BPs
   if (
     combined.includes('armor') &&
     (
@@ -340,7 +365,6 @@ export function getProductImage(product: {
     return '/images/store/armor-bundle.webp';
   }
 
-  // Tek BPs
   if (
     combined.includes('tek') &&
     (
@@ -355,7 +379,6 @@ export function getProductImage(product: {
   // VIP PRODUCTS
   // =========================================================
 
-  // Tribe Log
   if (
     combined.includes('tribe') &&
     combined.includes('log')
@@ -367,7 +390,6 @@ export function getProductImage(product: {
     return '/images/store/tribelog-bundle.webp';
   }
 
-  // VIP Room
   if (
     combined.includes('vip') &&
     combined.includes('room')
@@ -384,7 +406,6 @@ export function getProductImage(product: {
     category.includes('dedi') ||
     category.includes('dedicated')
   ) {
-    // ARB
     if (
       combined.includes('advanced rifle') ||
       combined.includes('arb')
@@ -392,7 +413,6 @@ export function getProductImage(product: {
       return '/images/store/advanced-rifle-dedi.webp';
     }
 
-    // Black Pearls
     if (
       combined.includes('black pearl') ||
       combined.includes('blackpearls')
@@ -400,7 +420,6 @@ export function getProductImage(product: {
       return '/images/store/black-pearl-dedi.webp';
     }
 
-    // Cementing Paste
     if (
       combined.includes('cementing paste') ||
       combined.includes('paste')
@@ -408,13 +427,11 @@ export function getProductImage(product: {
       return '/images/store/cementing-paste-dedi.webp';
     }
 
-    // Electronics
     if (combined.includes('electronics')) {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // IMPORTANT:
-    // Shards must come before regular Element.
+    // Shards before regular Element
     if (
       combined.includes('element shard') ||
       combined.includes('shard')
@@ -422,52 +439,42 @@ export function getProductImage(product: {
       return '/images/store/element-shard-dedi.webp';
     }
 
-    // Element
     if (combined.includes('element')) {
       return '/images/store/element-dedi.webp';
     }
 
-    // Crystal
     if (combined.includes('crystal')) {
       return '/images/store/crystal-dedi.webp';
     }
 
-    // Fiber
     if (combined.includes('fiber')) {
       return '/images/store/fiber-dedi.webp';
     }
 
-    // Polymer
     if (combined.includes('polymer')) {
       return '/images/store/hard-polymer-dedi.webp';
     }
 
-    // Metal
     if (combined.includes('metal')) {
       return '/images/store/metal-dedi.webp';
     }
 
-    // Obsidian
     if (combined.includes('obsidian')) {
       return '/images/store/obsidian-dedi.webp';
     }
 
-    // Oil
     if (combined.includes('oil')) {
       return '/images/store/oil-dedi.webp';
     }
 
-    // Rockets
     if (combined.includes('rocket')) {
       return '/images/store/rocket-dedi.webp';
     }
 
-    // C4
     if (combined.includes('c4')) {
       return '/images/store/c4-dedi.webp';
     }
 
-    // Power + Ammo
     if (
       combined.includes('power') &&
       combined.includes('ammo')

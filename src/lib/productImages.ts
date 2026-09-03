@@ -111,6 +111,25 @@ const productImageOverrides: Record<string, string> = {
     '/images/store/admin-base-build-service.webp',
 
   // =========================================================
+  // STRUCTURE BUNDLES
+  // =========================================================
+
+  'tek structure pack':
+    '/images/store/tek-structure-pack.webp',
+
+  'tek utility pack':
+    '/images/store/tek-utility-pack.webp',
+
+  'base defense pack':
+    '/images/store/base-defense-pack.webp',
+
+  'hardreset full base kit':
+    '/images/store/full-base-kit.webp',
+
+  'full base kit':
+    '/images/store/full-base-kit.webp',
+
+  // =========================================================
   // DINOS
   // =========================================================
 
@@ -429,7 +448,6 @@ export function getProductImage(product: {
     combined.includes('cap') ||
     combined.includes('capped');
 
-  // Triple
   if (
     isCapProduct &&
     (
@@ -440,7 +458,6 @@ export function getProductImage(product: {
     return '/images/store/triple-mutation-cap.webp';
   }
 
-  // Double
   if (
     isCapProduct &&
     (
@@ -451,7 +468,6 @@ export function getProductImage(product: {
     return '/images/store/double-mutation-cap.webp';
   }
 
-  // Single
   if (
     isCapProduct &&
     (
@@ -460,6 +476,34 @@ export function getProductImage(product: {
     )
   ) {
     return '/images/store/single-mutation-cap.webp';
+  }
+
+  // =========================================================
+  // STRUCTURE BUNDLES
+  // =========================================================
+
+  if (
+    combined.includes('tek structure pack')
+  ) {
+    return '/images/store/tek-structure-pack.webp';
+  }
+
+  if (
+    combined.includes('tek utility pack')
+  ) {
+    return '/images/store/tek-utility-pack.webp';
+  }
+
+  if (
+    combined.includes('base defense pack')
+  ) {
+    return '/images/store/base-defense-pack.webp';
+  }
+
+  if (
+    combined.includes('full base kit')
+  ) {
+    return '/images/store/full-base-kit.webp';
   }
 
   // =========================================================

@@ -220,6 +220,25 @@ const productImageOverrides: Record<string, string> = {
     '/images/store/emergency-rebuild-kit.webp',
 
   // =========================================================
+  // MEK PACKS
+  // =========================================================
+
+  'mek starter pack':
+    '/images/store/mek-starter-pack.webp',
+
+  'mek war bundle':
+    '/images/store/mek-war-bundle.webp',
+
+  'mek war pack':
+    '/images/store/mek-war-bundle.webp',
+
+  'mek elite pack':
+    '/images/store/mek-elite-pack.webp',
+
+  'mek elite bundle':
+    '/images/store/mek-elite-pack.webp',
+
+  // =========================================================
   // DINOS
   // =========================================================
 
@@ -568,6 +587,35 @@ export function getProductImage(product: {
   }
 
   // =========================================================
+  // MEK PACKS
+  // =========================================================
+
+  if (
+    combined.includes('mek') &&
+    (
+      combined.includes('elite') ||
+      combined.includes('10 meks 2') ||
+      combined.includes('12 meks')
+    )
+  ) {
+    return '/images/store/mek-elite-pack.webp';
+  }
+
+  if (
+    combined.includes('mek') &&
+    combined.includes('war')
+  ) {
+    return '/images/store/mek-war-bundle.webp';
+  }
+
+  if (
+    combined.includes('mek') &&
+    combined.includes('starter')
+  ) {
+    return '/images/store/mek-starter-pack.webp';
+  }
+
+  // =========================================================
   // KITS
   // =========================================================
 
@@ -781,7 +829,6 @@ export function getProductImage(product: {
       return '/images/store/electronics-dedi.webp';
     }
 
-    // Shards MUST come before Element.
     if (
       combined.includes('element shard') ||
       combined.includes('shard')

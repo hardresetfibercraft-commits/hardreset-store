@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 import {
@@ -8,6 +9,12 @@ import {
   Swords,
   Gamepad2,
 } from 'lucide-react';
+
+import DiscountCountdown from '../ui/DiscountCountdown';
+
+const launchTimestamp = new Date(
+  '2026-09-12T12:00:00-04:00'
+).getTime();
 
 export default function Hero() {
   return (
@@ -42,7 +49,7 @@ export default function Hero() {
           "
         />
 
-        {/* Bottom blend into the rest of the storefront */}
+        {/* Bottom blend into the storefront */}
         <div
           className="
             absolute
@@ -122,7 +129,7 @@ export default function Hero() {
         "
       >
 
-        <div className="max-w-3xl space-y-8">
+        <div className="max-w-3xl space-y-7">
 
           {/* SERVER BADGE */}
           <div
@@ -130,12 +137,14 @@ export default function Hero() {
               inline-flex
               items-center
               gap-3
+
               px-4
               py-2
 
               rounded-full
 
               bg-black/40
+
               border
               border-[#b58b3a]/40
 
@@ -180,8 +189,11 @@ export default function Hero() {
               className="
                 text-xs
                 sm:text-sm
+
                 text-[#d6b35a]
+
                 font-semibold
+
                 tracking-[0.12em]
               "
             >
@@ -200,7 +212,9 @@ export default function Hero() {
               lg:text-8xl
 
               font-black
+
               leading-[0.92]
+
               tracking-tight
 
               animate-slide-up
@@ -273,6 +287,28 @@ export default function Hero() {
           </p>
 
           {/* =================================================
+              LAUNCH COUNTDOWN
+          ================================================== */}
+          <div
+            className="
+              max-w-xl
+
+              animate-slide-up
+            "
+            style={{
+              animationDelay: '0.18s',
+              animationFillMode: 'both',
+            }}
+          >
+            <DiscountCountdown
+              endTimestamp={launchTimestamp}
+              variant="launch"
+              label="HARDRESET 25X LAUNCHING IN"
+              expiredText="HARDRESET 25X IS LIVE"
+            />
+          </div>
+
+          {/* =================================================
               BUTTONS
           ================================================== */}
           <div
@@ -280,12 +316,13 @@ export default function Hero() {
               flex
               flex-col
               sm:flex-row
+
               gap-4
 
               animate-slide-up
             "
             style={{
-              animationDelay: '0.2s',
+              animationDelay: '0.22s',
               animationFillMode: 'both',
             }}
           >
@@ -299,6 +336,7 @@ export default function Hero() {
                 inline-flex
                 items-center
                 justify-center
+
                 gap-2
 
                 px-8
@@ -307,6 +345,7 @@ export default function Hero() {
                 rounded-lg
 
                 bg-[#b58b3a]
+
                 hover:bg-[#d6b35a]
 
                 text-black
@@ -332,7 +371,9 @@ export default function Hero() {
                 className="
                   w-4
                   h-4
+
                   group-hover:translate-x-1
+
                   transition-transform
                 "
               />
@@ -348,6 +389,7 @@ export default function Hero() {
                 inline-flex
                 items-center
                 justify-center
+
                 gap-2
 
                 px-8
@@ -381,7 +423,9 @@ export default function Hero() {
                 className="
                   w-4
                   h-4
+
                   group-hover:translate-x-0.5
+
                   transition-transform
                 "
               />
@@ -402,7 +446,7 @@ export default function Hero() {
               gap-6
               sm:gap-8
 
-              pt-6
+              pt-5
 
               animate-slide-up
             "
@@ -498,7 +542,7 @@ function InfoBlock({
   value,
   label,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   value: string;
   label: string;
 }) {
@@ -515,6 +559,7 @@ function InfoBlock({
             sm:text-xl
 
             font-bold
+
             text-white
           "
         >
@@ -529,6 +574,7 @@ function InfoBlock({
             text-neutral-500
 
             uppercase
+
             tracking-wider
           "
         >

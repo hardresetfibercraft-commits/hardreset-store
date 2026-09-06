@@ -16,7 +16,17 @@ interface Props {
 export default function CategorySection({ categories }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const visibleCategories = categories.filter((cat) => !cat.hide);
+  const visibleCategories = categories.filter((cat) => {
+    if (cat.hide) return false;
+
+    const name = (cat.name || '').toLowerCase().trim();
+    const slug = (cat.slug || '').toLowerCase().trim();
+
+    // HOME belongs in site navigation, not store categories.
+    if (name === 'home' || slug === 'home') return false;
+
+    return true;
+  });
 
   if (visibleCategories.length === 0) return null;
 
@@ -31,9 +41,53 @@ export default function CategorySection({ categories }: Props) {
     });
   };
 
+  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    const container = scrollRef.current;
+
+    if (!container) return;
+
+    const canScrollHorizontally =
+      container.scrollWidth > container.clientWidth;
+
+    if (!canScrollHorizontally) return;
+
+    /*
+     * Trackpads already provide deltaX.
+     * Normal mouse wheels normally provide deltaY.
+     */
+    const movement =
+      Math.abs(event.deltaX) > Math.abs(event.deltaY)
+        ? event.deltaX
+        : event.deltaY;
+
+    if (movement === 0) return;
+
+    const atStart = container.scrollLeft <= 0;
+
+    const atEnd =
+      Math.ceil(container.scrollLeft + container.clientWidth) >=
+      container.scrollWidth;
+
+    /*
+     * Allow normal page scrolling once the carousel reaches either end.
+     */
+    if (
+      (movement < 0 && atStart) ||
+      (movement > 0 && atEnd)
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+
+    container.scrollBy({
+      left: movement,
+      behavior: 'auto',
+    });
+  };
+
   return (
     <section className="relative py-12 lg:py-16 bg-[#090806]">
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* SECTION HEADER */}
@@ -54,14 +108,23 @@ export default function CategorySection({ categories }: Props) {
           </div>
 
           <p className="text-sm sm:text-base text-neutral-400 max-w-md lg:text-right">
-            Choose a category and find the gear, dinos, resources,
-            progression packages, and other items you need.
+            Choose a category and find dinos, blueprints, resources,
+            progression packages, kits, Map Buyer options, and more.
           </p>
 
         </div>
 
         {/* CATEGORY CAROUSEL */}
-        <div className="relative border border-[#3a301f] bg-[#11100d] rounded-2xl p-4 sm:p-5 shadow-2xl shadow-black/30">
+        <div
+          className="
+            relative
+            border border-[#3a301f]
+            bg-[#11100d]
+            rounded-2xl
+            p-4 sm:p-5
+            shadow-2xl shadow-black/30
+          "
+        >
 
           {/* LEFT BUTTON */}
           <button
@@ -108,10 +171,20 @@ export default function CategorySection({ categories }: Props) {
           {/* SCROLL AREA */}
           <div
             ref={scrollRef}
+            onWheel={handleWheel}
             className="
-              flex gap-4 overflow-x-auto scroll-smooth
-              px-10 pb-2
-              snap-x snap-mandatory
+              flex
+              gap-4
+              overflow-x-auto
+              scroll-smooth
+              overscroll-x-contain
+              touch-pan-x
+              px-10
+              pb-2
+
+              snap-x
+              snap-proximity
+
               [scrollbar-width:none]
               [&::-webkit-scrollbar]:hidden
             "
@@ -127,23 +200,30 @@ export default function CategorySection({ categories }: Props) {
                 <Link
                   key={cat.id}
                   to={`/products?category=${categoryValue}`}
+                  draggable={false}
                   className="
                     group
+                    flex-none
                     min-w-[155px]
                     sm:min-w-[175px]
                     snap-start
+                    select-none
                   "
                 >
 
                   {/* IMAGE CARD */}
                   <div
                     className="
-                      relative h-[105px]
-                      rounded-xl overflow-hidden
+                      relative
+                      h-[105px]
+                      rounded-xl
+                      overflow-hidden
                       border border-[#3a301f]
                       bg-[#16130e]
+
                       group-hover:border-[#d6b35a]
                       group-hover:shadow-[0_0_25px_rgba(214,179,90,0.15)]
+
                       transition-all duration-300
                     "
                   >
@@ -153,8 +233,14 @@ export default function CategorySection({ categories }: Props) {
                         <img
                           src={cat.image}
                           alt={cat.name}
+                          draggable={false}
                           className="
-                            w-full h-full object-cover
+                            w-full
+                            h-full
+                            object-cover
+                            pointer-events-none
+                            select-none
+
                             group-hover:scale-110
                             transition-transform duration-500
                           "
@@ -164,7 +250,17 @@ export default function CategorySection({ categories }: Props) {
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1b1710] to-[#0b0a08]">
-                        <Icon className="w-10 h-10 text-[#b58b3a] group-hover:text-[#d6b35a] group-hover:scale-110 transition-all duration-300" />
+                        <Icon
+                          className="
+                            w-10 h-10
+                            text-[#b58b3a]
+
+                            group-hover:text-[#d6b35a]
+                            group-hover:scale-110
+
+                            transition-all duration-300
+                          "
+                        />
                       </div>
                     )}
 
@@ -173,19 +269,23 @@ export default function CategorySection({ categories }: Props) {
 
                   </div>
 
-                  {/* CATEGORY BUTTON / LABEL */}
+                  {/* CATEGORY LABEL */}
                   <div
                     className="
                       mt-3
                       min-h-[42px]
                       px-4 py-2
                       rounded-full
+
                       border border-[#332b1d]
                       bg-[#11100d]
+
                       flex items-center justify-center
                       text-center
+
                       group-hover:border-[#b58b3a]
                       group-hover:bg-[#1b160d]
+
                       transition-all duration-300
                     "
                   >
@@ -196,7 +296,9 @@ export default function CategorySection({ categories }: Props) {
                         tracking-[0.12em]
                         font-bold
                         text-[#d8d2c7]
+
                         group-hover:text-[#d6b35a]
+
                         transition-colors duration-300
                       "
                     >
@@ -209,15 +311,22 @@ export default function CategorySection({ categories }: Props) {
             })}
           </div>
 
-          {/* BOTTOM GOLD TRACK */}
-          <div className="mt-4 h-[2px] bg-[#242017] overflow-hidden rounded-full">
-            <div className="w-1/3 h-full bg-gradient-to-r from-[#8d692d] to-[#d6b35a]" />
+          {/* SCROLL HINT */}
+          <div className="mt-4 flex items-center gap-3">
+
+            <div className="flex-1 h-[2px] bg-[#242017] overflow-hidden rounded-full">
+              <div className="w-1/3 h-full bg-gradient-to-r from-[#8d692d] to-[#d6b35a]" />
+            </div>
+
+            <span className="hidden sm:block text-[10px] uppercase tracking-[0.18em] text-neutral-600 whitespace-nowrap">
+              Scroll to browse
+            </span>
+
           </div>
 
         </div>
 
       </div>
-
     </section>
   );
 }

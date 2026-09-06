@@ -10,6 +10,27 @@ import { getCategories } from '../../lib/api';
 import { getCategoryIcon } from '../../lib/categoryIcons';
 import { stripHtml } from '../../lib/utils';
 import type { Category } from '../../lib/types';
+import AnnouncementBar from '../ui/AnnouncementBar';
+
+function normalizeCategory(value?: string | null) {
+  return (value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function isHomeCategory(category: Category) {
+  const name = normalizeCategory(category.name);
+  const slug = normalizeCategory(category.slug);
+
+  return (
+    name === 'home' ||
+    slug === 'home' ||
+    name.endsWith(' home') ||
+    slug.endsWith(' home')
+  );
+}
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -42,7 +63,7 @@ export default function Header() {
   useEffect(() => {
     getCategories()
       .then((res) => {
-        if (res.categories?.length) setCategories(res.categories.filter((c) => !c.hide));
+        if (res.categories?.length) setCategories(res.categories.filter((c) => !c.hide && !isHomeCategory(c)));
       })
       .catch(() => {});
   }, []);
@@ -96,12 +117,16 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
-      <div className={`absolute inset-0 transition-all duration-500 ${
-        scrolled
-          ? 'bg-volcanic-950/90 backdrop-blur-xl border-b border-volcanic-800/50 shadow-lg shadow-black/10'
-          : 'bg-volcanic-950/70 backdrop-blur-lg border-b border-volcanic-800/20'
-      }`} />
-      <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <AnnouncementBar />
+
+      <div className="relative">
+        <div className={`absolute inset-0 transition-all duration-500 ${
+          scrolled
+            ? 'bg-volcanic-950/90 backdrop-blur-xl border-b border-volcanic-800/50 shadow-lg shadow-black/10'
+            : 'bg-volcanic-950/70 backdrop-blur-lg border-b border-volcanic-800/20'
+        }`} />
+
+        <nav className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <Link to="/" className="flex items-center gap-3 group">
             {store?.logo ? (
@@ -492,7 +517,8 @@ export default function Header() {
             </div>
           </div>
         )}
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }

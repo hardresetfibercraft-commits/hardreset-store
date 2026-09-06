@@ -176,6 +176,40 @@ const productImageOverrides: Record<string, string> = {
     '/images/store/admin-base-build-service.webp',
 
   // =========================================================
+  // MAP BUYERS
+  // =========================================================
+
+  'map buyer bundle':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  '3 month map buyer bundle':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  'hardreset map buyer bundle':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  'hardreset 25x map buyer bundle':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  'hardreset map buyer 3 month renewal':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  'map buyer 3 month renewal':
+    '/images/store/hardreset_25x_map_buyer_bundle.webp',
+
+  'fibercraft map buyer bundle':
+    '/images/store/fibercraft_map_buyer_bundle.webp',
+
+  'hardreset fibercraft map buyer bundle':
+    '/images/store/fibercraft_map_buyer_bundle.webp',
+
+  'fibercraft map buyer 3 month renewal':
+    '/images/store/fibercraft_map_buyer_bundle.webp',
+
+  'hardreset fibercraft map buyer 3 month renewal':
+    '/images/store/fibercraft_map_buyer_bundle.webp',
+
+  // =========================================================
   // STRUCTURE BUNDLES
   // =========================================================
 
@@ -690,6 +724,33 @@ export function getProductImage(product: {
     combined.includes('service')
   ) {
     return '/images/store/admin-base-build-service.webp';
+  }
+
+  // =========================================================
+  // MAP BUYERS
+  // =========================================================
+  // Keep this BEFORE the VIP / Tribe Log rules below.
+  // Map Buyer product names/descriptions can include VIP Room + Tribe Logs,
+  // so they need to be claimed here first.
+
+  const isMapBuyer =
+    combined.includes('map buyer') ||
+    category.includes('map buyer');
+
+  if (isMapBuyer) {
+    const isFibercraftMapBuyer =
+      combined.includes('fibercraft') ||
+      combined.includes('fiber craft') ||
+      category.includes('fibercraft') ||
+      category.includes('fiber craft');
+
+    if (isFibercraftMapBuyer) {
+      return '/images/store/fibercraft_map_buyer_bundle.webp';
+    }
+
+    // The custom HardReset storefront is the 25x store, so any Map Buyer
+    // product that is not explicitly Fibercraft uses the 25x artwork.
+    return '/images/store/hardreset_25x_map_buyer_bundle.webp';
   }
 
   // =========================================================

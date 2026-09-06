@@ -16,14 +16,28 @@ interface Props {
 export default function CategorySection({ categories }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const normalizeCategory = (value?: string | null) =>
+    (value ?? '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ');
+
   const visibleCategories = categories.filter((cat) => {
     if (cat.hide) return false;
 
-    const name = (cat.name || '').toLowerCase().trim();
-    const slug = (cat.slug || '').toLowerCase().trim();
+    const name = normalizeCategory(cat.name);
+    const slug = normalizeCategory(cat.slug);
 
-    // HOME belongs in site navigation, not store categories.
-    if (name === 'home' || slug === 'home') return false;
+    // HOME belongs in navigation, not the store category carousel.
+    if (
+      name === 'home' ||
+      slug === 'home' ||
+      name.endsWith(' home') ||
+      slug.endsWith(' home')
+    ) {
+      return false;
+    }
 
     return true;
   });
@@ -31,11 +45,13 @@ export default function CategorySection({ categories }: Props) {
   if (visibleCategories.length === 0) return null;
 
   const scroll = (direction: 'left' | 'right') => {
-    if (!scrollRef.current) return;
+    const container = scrollRef.current;
+
+    if (!container) return;
 
     const amount = 650;
 
-    scrollRef.current.scrollBy({
+    container.scrollBy({
       left: direction === 'left' ? -amount : amount,
       behavior: 'smooth',
     });
@@ -51,10 +67,6 @@ export default function CategorySection({ categories }: Props) {
 
     if (!canScrollHorizontally) return;
 
-    /*
-     * Trackpads already provide deltaX.
-     * Normal mouse wheels normally provide deltaY.
-     */
     const movement =
       Math.abs(event.deltaX) > Math.abs(event.deltaY)
         ? event.deltaX
@@ -68,9 +80,7 @@ export default function CategorySection({ categories }: Props) {
       Math.ceil(container.scrollLeft + container.clientWidth) >=
       container.scrollWidth;
 
-    /*
-     * Allow normal page scrolling once the carousel reaches either end.
-     */
+    // Allow normal page scrolling once the carousel hits either end.
     if (
       (movement < 0 && atStart) ||
       (movement > 0 && atEnd)
@@ -132,15 +142,30 @@ export default function CategorySection({ categories }: Props) {
             onClick={() => scroll('left')}
             aria-label="Scroll categories left"
             className="
-              absolute left-2 top-1/2 -translate-y-1/2 z-20
-              w-10 h-10 rounded-lg
+              absolute
+              left-2
+              top-1/2
+              -translate-y-1/2
+              z-20
+
+              w-10
+              h-10
+              rounded-lg
+
               bg-[#090806]/95
               border border-[#8d692d]
               text-[#d6b35a]
-              flex items-center justify-center
+
+              flex
+              items-center
+              justify-center
+
               hover:bg-[#b58b3a]
               hover:text-black
-              transition-all duration-300
+
+              transition-all
+              duration-300
+
               shadow-lg
             "
           >
@@ -153,15 +178,30 @@ export default function CategorySection({ categories }: Props) {
             onClick={() => scroll('right')}
             aria-label="Scroll categories right"
             className="
-              absolute right-2 top-1/2 -translate-y-1/2 z-20
-              w-10 h-10 rounded-lg
+              absolute
+              right-2
+              top-1/2
+              -translate-y-1/2
+              z-20
+
+              w-10
+              h-10
+              rounded-lg
+
               bg-[#090806]/95
               border border-[#8d692d]
               text-[#d6b35a]
-              flex items-center justify-center
+
+              flex
+              items-center
+              justify-center
+
               hover:bg-[#b58b3a]
               hover:text-black
-              transition-all duration-300
+
+              transition-all
+              duration-300
+
               shadow-lg
             "
           >
@@ -179,6 +219,7 @@ export default function CategorySection({ categories }: Props) {
               scroll-smooth
               overscroll-x-contain
               touch-pan-x
+
               px-10
               pb-2
 
@@ -216,15 +257,20 @@ export default function CategorySection({ categories }: Props) {
                     className="
                       relative
                       h-[105px]
+
                       rounded-xl
                       overflow-hidden
-                      border border-[#3a301f]
+
+                      border
+                      border-[#3a301f]
+
                       bg-[#16130e]
 
                       group-hover:border-[#d6b35a]
                       group-hover:shadow-[0_0_25px_rgba(214,179,90,0.15)]
 
-                      transition-all duration-300
+                      transition-all
+                      duration-300
                     "
                   >
 
@@ -242,30 +288,68 @@ export default function CategorySection({ categories }: Props) {
                             select-none
 
                             group-hover:scale-110
-                            transition-transform duration-500
+
+                            transition-transform
+                            duration-500
                           "
                         />
 
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
                       </>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1b1710] to-[#0b0a08]">
+                      <div
+                        className="
+                          w-full
+                          h-full
+
+                          flex
+                          items-center
+                          justify-center
+
+                          bg-gradient-to-br
+                          from-[#1b1710]
+                          to-[#0b0a08]
+                        "
+                      >
                         <Icon
                           className="
-                            w-10 h-10
+                            w-10
+                            h-10
+
                             text-[#b58b3a]
 
                             group-hover:text-[#d6b35a]
                             group-hover:scale-110
 
-                            transition-all duration-300
+                            transition-all
+                            duration-300
                           "
                         />
                       </div>
                     )}
 
                     {/* GOLD TOP LINE */}
-                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#b58b3a]/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div
+                      className="
+                        absolute
+                        top-0
+                        left-0
+                        right-0
+
+                        h-[2px]
+
+                        bg-gradient-to-r
+                        from-transparent
+                        via-[#b58b3a]/70
+                        to-transparent
+
+                        opacity-0
+                        group-hover:opacity-100
+
+                        transition-opacity
+                        duration-300
+                      "
+                    />
 
                   </div>
 
@@ -274,32 +358,45 @@ export default function CategorySection({ categories }: Props) {
                     className="
                       mt-3
                       min-h-[42px]
-                      px-4 py-2
+
+                      px-4
+                      py-2
+
                       rounded-full
 
-                      border border-[#332b1d]
+                      border
+                      border-[#332b1d]
+
                       bg-[#11100d]
 
-                      flex items-center justify-center
+                      flex
+                      items-center
+                      justify-center
+
                       text-center
 
                       group-hover:border-[#b58b3a]
                       group-hover:bg-[#1b160d]
 
-                      transition-all duration-300
+                      transition-all
+                      duration-300
                     "
                   >
                     <span
                       className="
-                        text-xs sm:text-sm
+                        text-xs
+                        sm:text-sm
+
                         uppercase
                         tracking-[0.12em]
                         font-bold
+
                         text-[#d8d2c7]
 
                         group-hover:text-[#d6b35a]
 
-                        transition-colors duration-300
+                        transition-colors
+                        duration-300
                       "
                     >
                       {cat.name}
@@ -311,7 +408,7 @@ export default function CategorySection({ categories }: Props) {
             })}
           </div>
 
-          {/* SCROLL HINT */}
+          {/* BOTTOM SCROLL HINT */}
           <div className="mt-4 flex items-center gap-3">
 
             <div className="flex-1 h-[2px] bg-[#242017] overflow-hidden rounded-full">

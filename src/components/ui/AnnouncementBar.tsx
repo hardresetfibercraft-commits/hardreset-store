@@ -1,12 +1,8 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Megaphone,
   ShieldCheck,
   Sparkles,
@@ -19,13 +15,7 @@ type Announcement = {
   text: string;
   href?: string;
   linkText?: string;
-  external?: boolean;
-  icon?:
-    | 'announcement'
-    | 'event'
-    | 'pvp'
-    | 'secure'
-    | 'launch';
+  icon?: 'announcement' | 'event' | 'pvp' | 'secure' | 'launch';
 };
 
 const announcements: Announcement[] = [
@@ -33,35 +23,31 @@ const announcements: Announcement[] = [
     id: 1,
     text: 'HARDRESET 25X LAUNCH IS SCHEDULED FOR NEXT WEEKEND',
     href: '/products',
-    linkText: 'Prepare For Launch',
+    linkText: 'PREPARE FOR LAUNCH',
     icon: 'launch',
   },
-
   {
     id: 2,
-    text: 'HardReset 25x PvP • Crossplay • 8-Man Tribes',
+    text: '25X PVP • CROSSPLAY • 8-MAN TRIBES',
     href: '/products',
-    linkText: 'Browse Store',
+    linkText: 'BROWSE STORE',
     icon: 'pvp',
   },
-
   {
     id: 3,
-    text: 'Map Buyer packages are available for tribes preparing for launch.',
-    href: '/products?category=map-buyer',
-    linkText: 'View Map Buyers',
+    text: 'MAP BUYER PACKAGES ARE AVAILABLE FOR TRIBES PREPARING FOR LAUNCH',
+    href: '/products',
+    linkText: 'VIEW STORE',
     icon: 'event',
   },
-
   {
     id: 4,
-    text: 'Need help before launch? Open a Donation Ticket in Discord.',
+    text: 'NEED HELP WITH A PURCHASE? OPEN A DONATION TICKET IN DISCORD',
     icon: 'announcement',
   },
-
   {
     id: 5,
-    text: 'Secure checkout powered through Tip4Serv.',
+    text: 'SECURE CHECKOUT POWERED THROUGH TIP4SERV',
     icon: 'secure',
   },
 ];
@@ -73,56 +59,34 @@ function AnnouncementIcon({
 }) {
   switch (type) {
     case 'launch':
-      return (
-        <Rocket className="w-4 h-4" />
-      );
-
+      return <Rocket className="w-3.5 h-3.5" />;
     case 'event':
-      return (
-        <Sparkles className="w-4 h-4" />
-      );
-
+      return <Sparkles className="w-3.5 h-3.5" />;
     case 'pvp':
-      return (
-        <Swords className="w-4 h-4" />
-      );
-
+      return <Swords className="w-3.5 h-3.5" />;
     case 'secure':
-      return (
-        <ShieldCheck className="w-4 h-4" />
-      );
-
+      return <ShieldCheck className="w-3.5 h-3.5" />;
     default:
-      return (
-        <Megaphone className="w-4 h-4" />
-      );
+      return <Megaphone className="w-3.5 h-3.5" />;
   }
 }
 
 export default function AnnouncementBar() {
-  const [activeIndex, setActiveIndex] =
-    useState(0);
-
-  const current =
-    announcements[activeIndex];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const current = announcements[activeIndex];
 
   useEffect(() => {
-    if (announcements.length <= 1) {
-      return;
-    }
+    if (announcements.length <= 1) return;
 
     const timer = window.setInterval(() => {
       setActiveIndex((currentIndex) =>
-        currentIndex >=
-        announcements.length - 1
+        currentIndex >= announcements.length - 1
           ? 0
           : currentIndex + 1
       );
     }, 6000);
 
-    return () => {
-      window.clearInterval(timer);
-    };
+    return () => window.clearInterval(timer);
   }, []);
 
   const previous = () => {
@@ -135,8 +99,7 @@ export default function AnnouncementBar() {
 
   const next = () => {
     setActiveIndex((currentIndex) =>
-      currentIndex >=
-      announcements.length - 1
+      currentIndex >= announcements.length - 1
         ? 0
         : currentIndex + 1
     );
@@ -145,255 +108,66 @@ export default function AnnouncementBar() {
   return (
     <div
       className="
-        relative
-        z-50
-        w-full
-
-        border-b
-        border-[#6f5226]/40
-
-        bg-gradient-to-r
-        from-[#090806]
-        via-[#171006]
-        to-[#090806]
-
+        relative z-[60] h-8 w-full overflow-hidden
+        border-b border-[#6f5226]/40
+        bg-gradient-to-r from-[#090806] via-[#171006] to-[#090806]
         text-[#eee9df]
-        overflow-hidden
       "
     >
+      <div className="pointer-events-none absolute inset-x-0 -top-10 h-16 bg-[#b58b3a]/10 blur-3xl" />
 
-      {/* GOLD AMBIENT GLOW */}
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-x-0
-          -top-10
-          h-20
-          bg-[#b58b3a]/10
-          blur-3xl
-        "
-      />
+      <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d6b35a]/70 to-transparent" />
 
-      {/* TOP GOLD LINE */}
-      <div
-        className="
-          absolute
-          top-0
-          left-0
-          right-0
-          h-px
-
-          bg-gradient-to-r
-          from-transparent
-          via-[#d6b35a]/70
-          to-transparent
-        "
-      />
-
-      <div
-        className="
-          relative
-          max-w-7xl
-          mx-auto
-
-          min-h-[42px]
-
-          px-4
-          sm:px-6
-          lg:px-8
-
-          flex
-          items-center
-          justify-between
-          gap-3
-        "
-      >
-
-        {/* LEFT ARROW */}
+      <div className="relative mx-auto flex h-full max-w-7xl items-center justify-between gap-2 px-2 sm:px-4 lg:px-6">
         <button
           type="button"
           onClick={previous}
           aria-label="Previous announcement"
-          className="
-            flex-none
-            w-7
-            h-7
-            rounded-full
-
-            flex
-            items-center
-            justify-center
-
-            text-[#8d692d]
-
-            hover:text-[#d6b35a]
-            hover:bg-[#b58b3a]/10
-
-            transition-all
-            duration-200
-          "
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[#8d692d] transition-all duration-200 hover:bg-[#b58b3a]/10 hover:text-[#d6b35a]"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-3.5 h-3.5" />
         </button>
 
-        {/* ANNOUNCEMENT */}
         <div
           key={current.id}
-          className="
-            min-w-0
-            flex-1
-
-            flex
-            items-center
-            justify-center
-
-            gap-2
-            sm:gap-3
-
-            text-center
-            animate-fade-in
-          "
+          className="flex min-w-0 flex-1 items-center justify-center gap-2 text-center animate-fade-in"
         >
-
-          <span
-            className="
-              flex-none
-              text-[#d6b35a]
-            "
-          >
-            <AnnouncementIcon
-              type={current.icon}
-            />
+          <span className="flex-none text-[#d6b35a]">
+            <AnnouncementIcon type={current.icon} />
           </span>
 
           <span
-            className={`
-              truncate
-
-              text-[11px]
-              sm:text-xs
-              md:text-sm
-
-              font-semibold
-              tracking-wide
-
-              ${
-                current.icon === 'launch'
-                  ? 'text-[#f0cf72]'
-                  : 'text-neutral-300'
-              }
-            `}
+            className={`truncate text-[9px] sm:text-[10px] md:text-[11px] font-bold tracking-[0.12em] ${
+              current.icon === 'launch'
+                ? 'text-[#f0cf72]'
+                : 'text-neutral-300'
+            }`}
           >
             {current.text}
           </span>
 
-          {current.href &&
-            current.linkText && (
-              current.external ? (
-                <a
-                  href={current.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="
-                    hidden
-                    sm:inline-flex
-
-                    flex-none
-
-                    items-center
-                    gap-1
-
-                    text-xs
-                    font-bold
-
-                    text-[#d6b35a]
-                    hover:text-[#f0cf72]
-
-                    transition-colors
-                  "
-                >
-                  {current.linkText}
-
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ) : (
-                <a
-                  href={current.href}
-                  className="
-                    hidden
-                    sm:inline-flex
-
-                    flex-none
-
-                    items-center
-                    gap-1
-
-                    text-xs
-                    font-bold
-
-                    text-[#d6b35a]
-                    hover:text-[#f0cf72]
-
-                    transition-colors
-                  "
-                >
-                  {current.linkText}
-
-                  <ChevronRight className="w-3 h-3" />
-                </a>
-              )
-            )}
-
+          {current.href && current.linkText && (
+            <Link
+              to={current.href}
+              className="hidden sm:inline-flex flex-none items-center gap-1 text-[9px] md:text-[10px] font-black tracking-[0.1em] text-[#d6b35a] transition-colors hover:text-[#f0cf72]"
+            >
+              {current.linkText}
+              <ChevronRight className="w-3 h-3" />
+            </Link>
+          )}
         </div>
 
-        {/* RIGHT ARROW */}
         <button
           type="button"
           onClick={next}
           aria-label="Next announcement"
-          className="
-            flex-none
-            w-7
-            h-7
-            rounded-full
-
-            flex
-            items-center
-            justify-center
-
-            text-[#8d692d]
-
-            hover:text-[#d6b35a]
-            hover:bg-[#b58b3a]/10
-
-            transition-all
-            duration-200
-          "
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[#8d692d] transition-all duration-200 hover:bg-[#b58b3a]/10 hover:text-[#d6b35a]"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3.5 h-3.5" />
         </button>
-
       </div>
 
-      {/* BOTTOM LIGHT */}
-      <div
-        className="
-          absolute
-          bottom-0
-          left-1/2
-          -translate-x-1/2
-
-          w-1/2
-          h-px
-
-          bg-gradient-to-r
-          from-transparent
-          via-[#8d692d]/40
-          to-transparent
-        "
-      />
-
+      <div className="pointer-events-none absolute bottom-0 left-1/2 h-px w-1/2 -translate-x-1/2 bg-gradient-to-r from-transparent via-[#8d692d]/40 to-transparent" />
     </div>
   );
 }

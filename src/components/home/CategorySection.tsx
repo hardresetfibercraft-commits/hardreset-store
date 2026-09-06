@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -29,7 +30,7 @@ export default function CategorySection({ categories }: Props) {
     const name = normalizeCategory(cat.name);
     const slug = normalizeCategory(cat.slug);
 
-    // HOME belongs in navigation, not the store category carousel.
+    // Remove Home from store categories.
     if (
       name === 'home' ||
       slug === 'home' ||
@@ -49,72 +50,36 @@ export default function CategorySection({ categories }: Props) {
 
     if (!container) return;
 
-    const amount = 650;
-
     container.scrollBy({
-      left: direction === 'left' ? -amount : amount,
+      left: direction === 'left' ? -650 : 650,
       behavior: 'smooth',
-    });
-  };
-
-  const handleWheel = (event: React.WheelEvent<HTMLDivElement>) => {
-    const container = scrollRef.current;
-
-    if (!container) return;
-
-    const canScrollHorizontally =
-      container.scrollWidth > container.clientWidth;
-
-    if (!canScrollHorizontally) return;
-
-    const movement =
-      Math.abs(event.deltaX) > Math.abs(event.deltaY)
-        ? event.deltaX
-        : event.deltaY;
-
-    if (movement === 0) return;
-
-    const atStart = container.scrollLeft <= 0;
-
-    const atEnd =
-      Math.ceil(container.scrollLeft + container.clientWidth) >=
-      container.scrollWidth;
-
-    // Allow normal page scrolling once the carousel hits either end.
-    if (
-      (movement < 0 && atStart) ||
-      (movement > 0 && atEnd)
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-
-    container.scrollBy({
-      left: movement,
-      behavior: 'auto',
     });
   };
 
   return (
     <section className="relative py-12 lg:py-16 bg-[#090806]">
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* SECTION HEADER */}
+        {/* HEADER */}
         <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-7">
 
           <div>
+
             <div className="flex items-center gap-3 mb-2">
+
               <LayoutGrid className="w-5 h-5 text-[#d6b35a]" />
 
               <span className="text-xs uppercase tracking-[0.3em] text-[#b58b3a] font-semibold">
                 Browse The Store
               </span>
+
             </div>
 
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#eee9df] tracking-tight">
               SHOP CATEGORIES
             </h2>
+
           </div>
 
           <p className="text-sm sm:text-base text-neutral-400 max-w-md lg:text-right">
@@ -136,7 +101,7 @@ export default function CategorySection({ categories }: Props) {
           "
         >
 
-          {/* LEFT BUTTON */}
+          {/* LEFT ARROW */}
           <button
             type="button"
             onClick={() => scroll('left')}
@@ -150,10 +115,12 @@ export default function CategorySection({ categories }: Props) {
 
               w-10
               h-10
+
               rounded-lg
 
               bg-[#090806]/95
               border border-[#8d692d]
+
               text-[#d6b35a]
 
               flex
@@ -172,7 +139,7 @@ export default function CategorySection({ categories }: Props) {
             <ChevronLeft className="w-5 h-5" />
           </button>
 
-          {/* RIGHT BUTTON */}
+          {/* RIGHT ARROW */}
           <button
             type="button"
             onClick={() => scroll('right')}
@@ -186,10 +153,12 @@ export default function CategorySection({ categories }: Props) {
 
               w-10
               h-10
+
               rounded-lg
 
               bg-[#090806]/95
               border border-[#8d692d]
+
               text-[#d6b35a]
 
               flex
@@ -208,17 +177,15 @@ export default function CategorySection({ categories }: Props) {
             <ChevronRight className="w-5 h-5" />
           </button>
 
-          {/* SCROLL AREA */}
+          {/* CATEGORY ROW */}
           <div
             ref={scrollRef}
-            onWheel={handleWheel}
             className="
               flex
               gap-4
+
               overflow-x-auto
               scroll-smooth
-              overscroll-x-contain
-              touch-pan-x
 
               px-10
               pb-2
@@ -230,8 +197,11 @@ export default function CategorySection({ categories }: Props) {
               [&::-webkit-scrollbar]:hidden
             "
           >
+
             {visibleCategories.map((cat) => {
-              const Icon = getCategoryIcon(cat.slug || cat.name);
+              const Icon = getCategoryIcon(
+                cat.slug || cat.name
+              );
 
               const categoryValue = encodeURIComponent(
                 cat.slug || cat.name
@@ -245,10 +215,11 @@ export default function CategorySection({ categories }: Props) {
                   className="
                     group
                     flex-none
+
                     min-w-[155px]
                     sm:min-w-[175px]
+
                     snap-start
-                    select-none
                   "
                 >
 
@@ -283,9 +254,8 @@ export default function CategorySection({ categories }: Props) {
                           className="
                             w-full
                             h-full
+
                             object-cover
-                            pointer-events-none
-                            select-none
 
                             group-hover:scale-110
 
@@ -297,20 +267,8 @@ export default function CategorySection({ categories }: Props) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-black/10" />
                       </>
                     ) : (
-                      <div
-                        className="
-                          w-full
-                          h-full
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1b1710] to-[#0b0a08]">
 
-                          flex
-                          items-center
-                          justify-center
-
-                          bg-gradient-to-br
-                          from-[#1b1710]
-                          to-[#0b0a08]
-                        "
-                      >
                         <Icon
                           className="
                             w-10
@@ -325,10 +283,10 @@ export default function CategorySection({ categories }: Props) {
                             duration-300
                           "
                         />
+
                       </div>
                     )}
 
-                    {/* GOLD TOP LINE */}
                     <div
                       className="
                         absolute
@@ -357,6 +315,7 @@ export default function CategorySection({ categories }: Props) {
                   <div
                     className="
                       mt-3
+
                       min-h-[42px]
 
                       px-4
@@ -382,6 +341,7 @@ export default function CategorySection({ categories }: Props) {
                       duration-300
                     "
                   >
+
                     <span
                       className="
                         text-xs
@@ -401,29 +361,26 @@ export default function CategorySection({ categories }: Props) {
                     >
                       {cat.name}
                     </span>
+
                   </div>
 
                 </Link>
               );
             })}
+
           </div>
 
-          {/* BOTTOM SCROLL HINT */}
-          <div className="mt-4 flex items-center gap-3">
+          {/* BOTTOM ACCENT */}
+          <div className="mt-4 h-[2px] bg-[#242017] overflow-hidden rounded-full">
 
-            <div className="flex-1 h-[2px] bg-[#242017] overflow-hidden rounded-full">
-              <div className="w-1/3 h-full bg-gradient-to-r from-[#8d692d] to-[#d6b35a]" />
-            </div>
-
-            <span className="hidden sm:block text-[10px] uppercase tracking-[0.18em] text-neutral-600 whitespace-nowrap">
-              Scroll to browse
-            </span>
+            <div className="w-1/3 h-full bg-gradient-to-r from-[#8d692d] to-[#d6b35a]" />
 
           </div>
 
         </div>
 
       </div>
+
     </section>
   );
 }

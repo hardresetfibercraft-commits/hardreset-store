@@ -6,7 +6,9 @@ import {
   Star,
 } from 'lucide-react';
 
-import type { Product } from '../../lib/types';
+import type {
+  Product,
+} from '../../lib/types';
 
 import {
   formatMoney,
@@ -16,6 +18,10 @@ import {
 import {
   getProductImage,
 } from '../../lib/productImages';
+
+import {
+  addRecentlyViewedProduct,
+} from '../../lib/recentlyViewed';
 
 import Badge from '../ui/Badge';
 import DiscountCountdown from '../ui/DiscountCountdown';
@@ -39,8 +45,10 @@ export default function ProductCard({
   product,
   index = 0,
 }: Props) {
-  const [quickViewOpen, setQuickViewOpen] =
-    useState(false);
+  const [
+    quickViewOpen,
+    setQuickViewOpen,
+  ] = useState(false);
 
   const {
     t,
@@ -84,6 +92,12 @@ export default function ProductCard({
     !outOfStock &&
     (product.stock ?? 0) <= 5;
 
+  function recordView() {
+    addRecentlyViewedProduct(
+      product
+    );
+  }
+
   return (
     <>
       <div
@@ -100,21 +114,23 @@ export default function ProductCard({
           animate-fade-in-up
         "
         style={{
-          animationDelay: `${index * 60}ms`,
-          animationFillMode: 'both',
+          animationDelay:
+            `${index * 60}ms`,
+
+          animationFillMode:
+            'both',
         }}
       >
         <Link
           to={`/product/${product.slug}`}
+          onClick={recordView}
           className="
             flex
             flex-1
             flex-col
           "
         >
-          {/* =================================================
-              PRODUCT IMAGE
-          ================================================== */}
+          {/* PRODUCT IMAGE */}
           <div
             className="
               relative
@@ -211,9 +227,14 @@ export default function ProductCard({
               )}
 
               {product.percent_off &&
-                product.percent_off > 0 && (
+                product.percent_off >
+                  0 && (
                   <Badge variant="discount">
-                    -{product.percent_off}%
+                    -
+                    {
+                      product.percent_off
+                    }
+                    %
                   </Badge>
                 )}
 
@@ -280,7 +301,6 @@ export default function ProductCard({
               </div>
             )}
 
-            {/* OUT OF STOCK */}
             {outOfStock && (
               <div
                 className="
@@ -296,9 +316,7 @@ export default function ProductCard({
             )}
           </div>
 
-          {/* =================================================
-              PRODUCT INFORMATION
-          ================================================== */}
+          {/* PRODUCT INFORMATION */}
           <div
             className="
               relative
@@ -456,14 +474,15 @@ export default function ProductCard({
           </div>
         </Link>
 
-        {/* =================================================
-            QUICK VIEW BUTTON
-        ================================================== */}
+        {/* QUICK VIEW */}
         <button
           type="button"
-          onClick={() =>
-            setQuickViewOpen(true)
-          }
+          onClick={() => {
+            recordView();
+            setQuickViewOpen(
+              true
+            );
+          }}
           aria-label={`Quick view ${product.name}`}
           title="Quick View"
           className="
@@ -508,7 +527,12 @@ export default function ProductCard({
             focus:opacity-100
           "
         >
-          <Eye className="h-4 w-4" />
+          <Eye
+            className="
+              h-4
+              w-4
+            "
+          />
         </button>
       </div>
 
@@ -516,7 +540,9 @@ export default function ProductCard({
         product={product}
         open={quickViewOpen}
         onClose={() =>
-          setQuickViewOpen(false)
+          setQuickViewOpen(
+            false
+          )
         }
       />
     </>

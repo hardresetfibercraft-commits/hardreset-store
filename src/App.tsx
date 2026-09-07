@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from 'react-router-dom';
 
 import { CartProvider } from './lib/cart';
 import { StoreProvider } from './lib/store';
@@ -13,7 +17,7 @@ import Footer from './components/layout/Footer';
 import CartDrawer from './components/cart/CartDrawer';
 
 import ToastContainer from './components/ui/ToastContainer';
-import AnnouncementBar from './components/ui/AnnouncementBar';
+import FloatingDiscordButton from './components/ui/FloatingDiscordButton';
 
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
@@ -29,23 +33,15 @@ export default function App() {
   return (
     <BrowserRouter>
       <ThemeProvider>
-
         <LanguageProvider>
-
           <ToastProvider>
-
             <StoreProvider>
-
               <Tip4ServAuthProvider>
-
                 <CartProvider>
 
                   <div className="min-h-screen flex flex-col">
 
-                    {/* GLOBAL ANNOUNCEMENT BAR */}
-                    <AnnouncementBar />
-
-                    {/* MAIN NAVIGATION */}
+                    {/* HEADER + ANNOUNCEMENT BAR */}
                     <Header />
 
                     {/* PAGE CONTENT */}
@@ -103,22 +99,18 @@ export default function App() {
                     {/* FOOTER */}
                     <Footer />
 
-                    {/* GLOBAL OVERLAYS */}
+                    {/* GLOBAL UI */}
                     <CartDrawer />
                     <ToastContainer />
+                    <FloatingDiscordButton />
 
                   </div>
 
                 </CartProvider>
-
               </Tip4ServAuthProvider>
-
             </StoreProvider>
-
           </ToastProvider>
-
         </LanguageProvider>
-
       </ThemeProvider>
     </BrowserRouter>
   );

@@ -1,40 +1,74 @@
 import { useState, useEffect } from 'react';
+
 import Hero from '../components/home/Hero';
 import FeaturedProducts from '../components/home/FeaturedProducts';
 import LatestProducts from '../components/home/LatestProducts';
 import CategorySection from '../components/home/CategorySection';
+
 import ApiErrorNotice from '../components/ui/ApiErrorNotice';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import { getAllProducts, getCategories } from '../lib/api';
-import type { Product, Category } from '../lib/types';
-import { usePageTitle } from '../lib/usePageTitle';
-import { useStore } from '../lib/store';
+import TrustStrip from '../components/ui/TrustStrip';
+
+import {
+  getAllProducts,
+  getCategories,
+} from '../lib/api';
+
+import type {
+  Product,
+  Category,
+} from '../lib/types';
+
+import {
+  usePageTitle,
+} from '../lib/usePageTitle';
+
+import {
+  useStore,
+} from '../lib/store';
 
 export default function HomePage() {
   usePageTitle();
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [contentError, setContentError] = useState<string | null>(null);
+  const [products, setProducts] =
+    useState<Product[]>([]);
 
-  const { error: storeError } = useStore();
+  const [categories, setCategories] =
+    useState<Category[]>([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [contentError, setContentError] =
+    useState<string | null>(null);
+
+  const {
+    error: storeError,
+  } = useStore();
 
   useEffect(() => {
     async function load() {
       try {
         setContentError(null);
 
-        const [products, catRes] = await Promise.all([
+        const [
+          products,
+          catRes,
+        ] = await Promise.all([
           getAllProducts(),
           getCategories(),
         ]);
 
         setProducts(products);
-        setCategories(catRes.categories ?? []);
+
+        setCategories(
+          catRes.categories ?? []
+        );
       } catch (err) {
         setContentError(
-          err instanceof Error ? err.message : String(err)
+          err instanceof Error
+            ? err.message
+            : String(err)
         );
 
         setProducts([]);
@@ -49,7 +83,15 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-volcanic-950">
+      <div
+        className="
+          min-h-screen
+          flex
+          items-center
+          justify-center
+          bg-volcanic-950
+        "
+      >
         <LoadingSpinner />
       </div>
     );
@@ -57,9 +99,24 @@ export default function HomePage() {
 
   return (
     <div className="animate-fade-in">
+
+      {/* HERO */}
       <Hero />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* TRUST / STORE INFO STRIP */}
+      <TrustStrip />
+
+      {/* ERROR MESSAGES */}
+      <div
+        className="
+          max-w-7xl
+          mx-auto
+
+          px-4
+          sm:px-6
+          lg:px-8
+        "
+      >
         {storeError && (
           <ApiErrorNotice
             title="Tip4Serv Store Error"
@@ -75,11 +132,21 @@ export default function HomePage() {
         )}
       </div>
 
-      <FeaturedProducts products={products} />
+      {/* FEATURED PRODUCTS */}
+      <FeaturedProducts
+        products={products}
+      />
 
-      <CategorySection categories={categories} />
+      {/* SHOP CATEGORIES */}
+      <CategorySection
+        categories={categories}
+      />
 
-      <LatestProducts products={products} />
+      {/* LATEST PRODUCTS */}
+      <LatestProducts
+        products={products}
+      />
+
     </div>
   );
 }

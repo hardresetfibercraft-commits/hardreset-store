@@ -18,6 +18,7 @@ import CartDrawer from './components/cart/CartDrawer';
 
 import ToastContainer from './components/ui/ToastContainer';
 import FloatingDiscordButton from './components/ui/FloatingDiscordButton';
+import BackToTop from './components/ui/BackToTop';
 
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
@@ -41,10 +42,8 @@ export default function App() {
 
                   <div className="min-h-screen flex flex-col">
 
-                    {/* HEADER + ANNOUNCEMENT BAR */}
                     <Header />
 
-                    {/* PAGE CONTENT */}
                     <main className="flex-1">
                       <Routes>
 
@@ -96,12 +95,13 @@ export default function App() {
                       </Routes>
                     </main>
 
-                    {/* FOOTER */}
                     <Footer />
 
-                    {/* GLOBAL UI */}
                     <CartDrawer />
                     <ToastContainer />
+
+                    <BackToTop />
+
                     <FloatingDiscordButton />
 
                   </div>

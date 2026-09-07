@@ -13,30 +13,34 @@ const steps = [
     icon: ShoppingBag,
     title: 'Choose Your Package',
     description:
-      'Browse dinos, resources, kits, blueprints, services and more.',
+      'Browse dinos, resources, kits, blueprints, services, Map Buyer packages and more.',
+    tone: 'gold',
   },
   {
     number: '02',
     icon: Gamepad2,
     title: 'Identify Your Account',
     description:
-      'Provide the required EOS, Discord or player information at checkout.',
+      'Provide the required EOS, Discord or player information during checkout.',
+    tone: 'cyan',
   },
   {
     number: '03',
     icon: Zap,
     title: 'Receive Your Order',
     description:
-      'Automatic Helena rewards are delivered where supported.',
+      'Supported rewards are delivered automatically through Helena.',
+    tone: 'cyan',
   },
   {
     number: '04',
     icon: Ticket,
     title: 'Staff Fulfillment',
     description:
-      'Manual packages and selections are completed through a Donation Ticket.',
+      'Manual packages, selections and services are completed through a Donation Ticket.',
+    tone: 'gold',
   },
-];
+] as const;
 
 export default function HowDeliveryWorks() {
   return (
@@ -45,13 +49,64 @@ export default function HowDeliveryWorks() {
         relative
         overflow-hidden
 
-        bg-[#090806]
+        border-y
+        border-white/5
+
+        bg-[#070807]
 
         py-12
         sm:py-16
       "
     >
-      {/* BACKGROUND GLOW */}
+      {/* =====================================================
+          BACKGROUND EFFECTS
+      ====================================================== */}
+
+      {/* GOLD GLOW */}
+      <div
+        className="
+          pointer-events-none
+
+          absolute
+          -left-24
+          top-1/2
+
+          h-72
+          w-72
+
+          -translate-y-1/2
+
+          rounded-full
+
+          bg-[#b58b3a]/10
+
+          blur-[120px]
+        "
+      />
+
+      {/* TEK BLUE GLOW */}
+      <div
+        className="
+          pointer-events-none
+
+          absolute
+          -right-24
+          top-1/2
+
+          h-72
+          w-72
+
+          -translate-y-1/2
+
+          rounded-full
+
+          bg-cyan-500/10
+
+          blur-[120px]
+        "
+      />
+
+      {/* CENTER GLOW */}
       <div
         className="
           pointer-events-none
@@ -60,17 +115,18 @@ export default function HowDeliveryWorks() {
           left-1/2
           top-1/2
 
-          h-72
-          w-3/4
+          h-48
+          w-2/3
 
           -translate-x-1/2
           -translate-y-1/2
 
-          rounded-full
+          bg-gradient-to-r
+          from-[#b58b3a]/5
+          via-cyan-500/5
+          to-[#b58b3a]/5
 
-          bg-[#b58b3a]/5
-
-          blur-[120px]
+          blur-[100px]
         "
       />
 
@@ -86,7 +142,9 @@ export default function HowDeliveryWorks() {
           lg:px-8
         "
       >
-        {/* HEADING */}
+        {/* =====================================================
+            HEADING
+        ====================================================== */}
         <div
           className="
             mb-8
@@ -106,20 +164,23 @@ export default function HowDeliveryWorks() {
 
               uppercase
 
-              tracking-[0.22em]
+              tracking-[0.24em]
 
-              text-[#b58b3a]
+              text-cyan-300
             "
           >
-            HARDRESET STORE
+            HARDRESET 25X STORE
           </div>
 
           <h2
             className="
               text-2xl
               sm:text-3xl
+              lg:text-4xl
 
               font-black
+
+              tracking-tight
 
               text-white
             "
@@ -127,25 +188,44 @@ export default function HowDeliveryWorks() {
             How Delivery Works
           </h2>
 
-          <p
+          <div
             className="
               mx-auto
               mt-3
+
+              h-px
+              w-40
+
+              bg-gradient-to-r
+              from-transparent
+              via-[#d6b35a]
+              to-cyan-400
+            "
+          />
+
+          <p
+            className="
+              mx-auto
+              mt-4
 
               max-w-2xl
 
               text-sm
               sm:text-base
 
+              leading-relaxed
+
               text-neutral-500
             "
           >
-            Some purchases are delivered automatically.
+            Some purchases are delivered automatically through Helena.
             Others require staff fulfillment through Discord.
           </p>
         </div>
 
-        {/* STEPS */}
+        {/* =====================================================
+            STEPS
+        ====================================================== */}
         <div
           className="
             grid
@@ -160,10 +240,13 @@ export default function HowDeliveryWorks() {
           {steps.map((step, index) => {
             const Icon = step.icon;
 
+            const isCyan =
+              step.tone === 'cyan';
+
             return (
               <div
                 key={step.number}
-                className="
+                className={`
                   group
 
                   relative
@@ -173,25 +256,49 @@ export default function HowDeliveryWorks() {
                   rounded-2xl
 
                   border
-                  border-[#8d692d]/20
-
-                  bg-[#0d0b08]/80
 
                   p-5
+                  sm:p-6
+
+                  backdrop-blur-md
 
                   transition-all
                   duration-300
 
                   hover:-translate-y-1
 
-                  hover:border-[#d6b35a]/40
+                  ${
+                    isCyan
+                      ? `
+                        border-cyan-400/15
+                        bg-gradient-to-br
+                        from-cyan-950/20
+                        via-[#0a0d0d]
+                        to-[#080908]
 
-                  hover:bg-[#12100b]
-                "
+                        hover:border-cyan-400/40
+
+                        hover:shadow-xl
+                        hover:shadow-cyan-950/20
+                      `
+                      : `
+                        border-[#d6b35a]/18
+                        bg-gradient-to-br
+                        from-[#1a1409]/45
+                        via-[#0c0a07]
+                        to-[#080807]
+
+                        hover:border-[#d6b35a]/40
+
+                        hover:shadow-xl
+                        hover:shadow-black/30
+                      `
+                  }
+                `}
               >
-                {/* TOP LIGHT */}
+                {/* TOP LINE */}
                 <div
-                  className="
+                  className={`
                     pointer-events-none
 
                     absolute
@@ -202,39 +309,76 @@ export default function HowDeliveryWorks() {
                     h-px
 
                     bg-gradient-to-r
+
                     from-transparent
-                    via-[#d6b35a]/40
+
+                    ${
+                      isCyan
+                        ? 'via-cyan-300/70'
+                        : 'via-[#d6b35a]/70'
+                    }
+
                     to-transparent
-                  "
+                  `}
+                />
+
+                {/* CARD GLOW */}
+                <div
+                  className={`
+                    pointer-events-none
+
+                    absolute
+                    -top-12
+                    -right-12
+
+                    h-28
+                    w-28
+
+                    rounded-full
+
+                    blur-3xl
+
+                    ${
+                      isCyan
+                        ? 'bg-cyan-400/10'
+                        : 'bg-[#d6b35a]/10'
+                    }
+                  `}
                 />
 
                 {/* STEP NUMBER */}
                 <div
-                  className="
+                  className={`
                     absolute
 
                     right-4
-                    top-3
+                    top-2
 
-                    text-4xl
+                    text-5xl
 
                     font-black
 
-                    text-white/[0.035]
-                  "
+                    ${
+                      isCyan
+                        ? 'text-cyan-300/[0.055]'
+                        : 'text-[#d6b35a]/[0.07]'
+                    }
+                  `}
                 >
                   {step.number}
                 </div>
 
                 {/* ICON */}
                 <div
-                  className="
-                    mb-4
+                  className={`
+                    relative
+
+                    mb-5
 
                     flex
 
-                    h-11
-                    w-11
+                    h-12
+                    w-12
 
                     items-center
                     justify-center
@@ -242,19 +386,30 @@ export default function HowDeliveryWorks() {
                     rounded-xl
 
                     border
-                    border-[#d6b35a]/20
-
-                    bg-[#b58b3a]/8
-
-                    text-[#d6b35a]
 
                     transition-all
                     duration-300
 
-                    group-hover:border-[#d6b35a]/40
-                    group-hover:bg-[#b58b3a]/12
-                    group-hover:text-[#f0cf72]
-                  "
+                    ${
+                      isCyan
+                        ? `
+                          border-cyan-400/25
+                          bg-cyan-400/10
+                          text-cyan-300
+
+                          group-hover:border-cyan-300/50
+                          group-hover:bg-cyan-400/15
+                        `
+                        : `
+                          border-[#d6b35a]/25
+                          bg-[#b58b3a]/10
+                          text-[#d6b35a]
+
+                          group-hover:border-[#d6b35a]/50
+                          group-hover:bg-[#b58b3a]/15
+                        `
+                    }
+                  `}
                 >
                   <Icon className="h-5 w-5" />
                 </div>
@@ -262,6 +417,8 @@ export default function HowDeliveryWorks() {
                 {/* TITLE */}
                 <div
                   className="
+                    relative
+
                     flex
                     items-center
 
@@ -283,15 +440,19 @@ export default function HowDeliveryWorks() {
 
                   {index < steps.length - 1 && (
                     <ChevronRight
-                      className="
+                      className={`
                         hidden
                         xl:block
 
                         h-4
                         w-4
 
-                        text-[#8d692d]
-                      "
+                        ${
+                          isCyan
+                            ? 'text-cyan-700'
+                            : 'text-[#8d692d]'
+                        }
+                      `}
                     />
                   )}
                 </div>
@@ -299,6 +460,8 @@ export default function HowDeliveryWorks() {
                 {/* DESCRIPTION */}
                 <p
                   className="
+                    relative
+
                     mt-2
 
                     text-xs
@@ -312,10 +475,12 @@ export default function HowDeliveryWorks() {
                   {step.description}
                 </p>
 
-                {/* COMPLETE INDICATOR */}
+                {/* STEP FOOTER */}
                 <div
-                  className="
-                    mt-4
+                  className={`
+                    relative
+
+                    mt-5
 
                     flex
                     items-center
@@ -324,29 +489,61 @@ export default function HowDeliveryWorks() {
 
                     text-[9px]
 
-                    font-bold
+                    font-black
 
                     uppercase
 
-                    tracking-[0.12em]
+                    tracking-[0.13em]
 
-                    text-neutral-600
-                  "
+                    ${
+                      isCyan
+                        ? 'text-cyan-500/70'
+                        : 'text-[#8d692d]'
+                    }
+                  `}
                 >
                   <CheckCircle2
                     className="
                       h-3
                       w-3
-
-                      text-[#8d692d]
                     "
                   />
 
-                  Step {step.number}
+                  STEP {step.number}
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* =====================================================
+            BOTTOM MESSAGE
+        ====================================================== */}
+        <div
+          className="
+            mt-6
+
+            flex
+            items-center
+            justify-center
+
+            gap-2
+
+            text-center
+
+            text-[10px]
+            sm:text-xs
+
+            font-semibold
+
+            text-neutral-600
+          "
+        >
+          <Zap className="h-3.5 w-3.5 text-cyan-500" />
+
+          Products marked AUTO DELIVERY are handled automatically where supported.
+
+          <Ticket className="h-3.5 w-3.5 text-[#b58b3a]" />
         </div>
       </div>
     </section>

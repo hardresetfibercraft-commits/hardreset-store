@@ -87,9 +87,11 @@ export default function HomePage() {
       <div
         className="
           min-h-screen
+
           flex
           items-center
           justify-center
+
           bg-volcanic-950
         "
       >
@@ -101,12 +103,16 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
 
+      {/* FORTRESS HERO */}
       <Hero />
 
+      {/* SECURE / DELIVERY / CROSSPLAY / SUPPORT */}
       <TrustStrip />
 
+      {/* HOW STORE DELIVERY WORKS */}
       <HowDeliveryWorks />
 
+      {/* API ERRORS */}
       <div
         className="
           max-w-7xl
@@ -132,14 +138,17 @@ export default function HomePage() {
         )}
       </div>
 
+      {/* FEATURED */}
       <FeaturedProducts
         products={products}
       />
 
+      {/* CATEGORIES */}
       <CategorySection
         categories={categories}
       />
 
+      {/* LATEST PRODUCTS */}
       <LatestProducts
         products={products}
       />

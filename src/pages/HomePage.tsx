@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import Hero from '../components/home/Hero';
 import FeaturedProducts from '../components/home/FeaturedProducts';
+import RecentlyViewed from '../components/home/RecentlyViewed';
 import LatestProducts from '../components/home/LatestProducts';
 import CategorySection from '../components/home/CategorySection';
 
@@ -31,17 +35,28 @@ import {
 export default function HomePage() {
   usePageTitle();
 
-  const [products, setProducts] =
-    useState<Product[]>([]);
+  const [
+    products,
+    setProducts,
+  ] = useState<Product[]>([]);
 
-  const [categories, setCategories] =
-    useState<Category[]>([]);
+  const [
+    categories,
+    setCategories,
+  ] = useState<Category[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [contentError, setContentError] =
-    useState<string | null>(null);
+  const [
+    contentError,
+    setContentError,
+  ] =
+    useState<string | null>(
+      null
+    );
 
   const {
     error: storeError,
@@ -50,7 +65,9 @@ export default function HomePage() {
   useEffect(() => {
     async function load() {
       try {
-        setContentError(null);
+        setContentError(
+          null
+        );
 
         const [
           products,
@@ -60,10 +77,13 @@ export default function HomePage() {
           getCategories(),
         ]);
 
-        setProducts(products);
+        setProducts(
+          products
+        );
 
         setCategories(
-          catRes.categories ?? []
+          catRes.categories ??
+            []
         );
       } catch (err) {
         setContentError(
@@ -75,7 +95,9 @@ export default function HomePage() {
         setProducts([]);
         setCategories([]);
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     }
 
@@ -106,10 +128,10 @@ export default function HomePage() {
       {/* FORTRESS HERO */}
       <Hero />
 
-      {/* SECURE / DELIVERY / CROSSPLAY / SUPPORT */}
+      {/* TRUST STRIP */}
       <TrustStrip />
 
-      {/* HOW STORE DELIVERY WORKS */}
+      {/* DELIVERY EXPLANATION */}
       <HowDeliveryWorks />
 
       {/* API ERRORS */}
@@ -126,31 +148,44 @@ export default function HomePage() {
         {storeError && (
           <ApiErrorNotice
             title="Tip4Serv Store Error"
-            message={storeError}
+            message={
+              storeError
+            }
           />
         )}
 
         {contentError && (
           <ApiErrorNotice
             title="Unable to Load Products or Categories"
-            message={contentError}
+            message={
+              contentError
+            }
           />
         )}
       </div>
 
-      {/* FEATURED */}
+      {/* FEATURED PRODUCTS */}
       <FeaturedProducts
-        products={products}
+        products={
+          products
+        }
       />
+
+      {/* RECENTLY VIEWED */}
+      <RecentlyViewed />
 
       {/* CATEGORIES */}
       <CategorySection
-        categories={categories}
+        categories={
+          categories
+        }
       />
 
       {/* LATEST PRODUCTS */}
       <LatestProducts
-        products={products}
+        products={
+          products
+        }
       />
 
     </div>

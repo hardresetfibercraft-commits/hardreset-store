@@ -1,5 +1,10 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+
+import {
+  Eye,
+  Star,
+} from 'lucide-react';
 
 import type { Product } from '../../lib/types';
 
@@ -15,6 +20,7 @@ import {
 import Badge from '../ui/Badge';
 import DiscountCountdown from '../ui/DiscountCountdown';
 import FulfillmentBadge from '../ui/FulfillmentBadge';
+import QuickViewModal from '../ui/QuickViewModal';
 
 import {
   useLanguage,
@@ -33,6 +39,9 @@ export default function ProductCard({
   product,
   index = 0,
 }: Props) {
+  const [quickViewOpen, setQuickViewOpen] =
+    useState(false);
+
   const {
     t,
     lang,
@@ -76,364 +85,440 @@ export default function ProductCard({
     (product.stock ?? 0) <= 5;
 
   return (
-    <Link
-      to={`/product/${product.slug}`}
-      className="
-        group
-        glass-card-hover
-        card-shine
-        flex
-        flex-col
-        animate-fade-in-up
-      "
-      style={{
-        animationDelay: `${index * 60}ms`,
-        animationFillMode: 'both',
-      }}
-    >
-      {/* =====================================================
-          PRODUCT IMAGE
-      ====================================================== */}
+    <>
       <div
         className="
-          relative
-          aspect-[4/3]
-
-          overflow-hidden
-
-          bg-volcanic-800
-        "
-      >
-        {productImage ? (
-          <img
-            src={productImage}
-            alt={product.name}
-            className="
-              w-full
-              h-full
-
-              object-cover
-
-              transition-transform
-              duration-500
-
-              group-hover:scale-110
-            "
-            loading="lazy"
-          />
-        ) : (
-          <div
-            className="
-              w-full
-              h-full
-
-              flex
-              items-center
-              justify-center
-
-              bg-gradient-to-br
-              from-volcanic-800
-              to-volcanic-900
-            "
-          >
-            <Star
-              className="
-                w-12
-                h-12
-                text-volcanic-600
-              "
-            />
-          </div>
-        )}
-
-        {/* IMAGE DARKENING */}
-        <div
-          className="
-            absolute
-            inset-0
-
-            bg-gradient-to-t
-            from-volcanic-950/80
-            via-volcanic-950/15
-            to-transparent
-
-            opacity-60
-
-            group-hover:opacity-80
-
-            transition-opacity
-            duration-300
-          "
-        />
-
-        {/* =================================================
-            TOP LEFT PRODUCT BADGES
-        ================================================== */}
-        <div
-          className="
-            absolute
-            top-3
-            left-3
-
-            flex
-            flex-wrap
-
-            gap-1.5
-          "
-        >
-          {isNew && (
-            <Badge variant="new">
-              {t(
-                'product.badge.new'
-              )}
-            </Badge>
-          )}
-
-          {product.percent_off &&
-            product.percent_off >
-              0 && (
-              <Badge variant="discount">
-                -{product.percent_off}%
-              </Badge>
-            )}
-
-          {product.featured && (
-            <Badge variant="featured">
-              {t(
-                'product.badge.star'
-              )}
-            </Badge>
-          )}
-        </div>
-
-        {/* =================================================
-            STOCK STATUS
-        ================================================== */}
-        {stockTracked && (
-          <div
-            className="
-              absolute
-              top-3
-              right-3
-            "
-          >
-            {outOfStock ? (
-              <Badge variant="out_of_stock">
-                {t(
-                  'product.stock.out_of_stock'
-                )}
-              </Badge>
-            ) : lowStock ? (
-              <Badge variant="low_stock">
-                {t(
-                  'product.stock.low_stock',
-                  {
-                    qty:
-                      product.stock ??
-                      0,
-                  }
-                )}
-              </Badge>
-            ) : (
-              <Badge variant="in_stock">
-                {t(
-                  'product.stock.in_stock'
-                )}
-              </Badge>
-            )}
-          </div>
-        )}
-
-        {/* =================================================
-            FULFILLMENT STATUS
-        ================================================== */}
-        {!outOfStock && (
-          <div
-            className="
-              absolute
-              bottom-3
-              left-3
-              right-3
-
-              z-10
-            "
-          >
-            <FulfillmentBadge
-              product={product}
-            />
-          </div>
-        )}
-
-        {/* OUT OF STOCK OVERLAY */}
-        {outOfStock && (
-          <div
-            className="
-              absolute
-              inset-0
-
-              bg-volcanic-950/50
-
-              backdrop-blur-[1px]
-            "
-            aria-hidden="true"
-          />
-        )}
-      </div>
-
-      {/* =====================================================
-          PRODUCT INFORMATION
-      ====================================================== */}
-      <div
-        className="
+          group
           relative
 
-          p-4
-          lg:p-5
+          glass-card-hover
+          card-shine
 
           flex
           flex-col
-          flex-1
+
+          animate-fade-in-up
         "
+        style={{
+          animationDelay: `${index * 60}ms`,
+          animationFillMode: 'both',
+        }}
       >
-        <h3
+        <Link
+          to={`/product/${product.slug}`}
           className="
-            text-base
-            font-semibold
-
-            text-heading
-
-            mb-2
-
-            group-hover:text-ark-400
-
-            transition-colors
-            duration-200
+            flex
+            flex-1
+            flex-col
           "
         >
-          {product.name}
-        </h3>
-
-        {product.small_description && (
+          {/* =================================================
+              PRODUCT IMAGE
+          ================================================== */}
           <div
             className="
-              text-sm
-              text-volcanic-400
+              relative
 
-              leading-relaxed
+              aspect-[4/3]
 
-              mb-4
+              overflow-hidden
 
-              line-clamp-2
-
-              flex-1
-
-              [&_*]:inline
-            "
-            dangerouslySetInnerHTML={{
-              __html:
-                product.small_description,
-            }}
-          />
-        )}
-
-        {/* =================================================
-            PRICE
-        ================================================== */}
-        <div
-          className="
-            mt-auto
-            pt-3
-
-            border-t
-            border-volcanic-800/50
-
-            space-y-2
-          "
-        >
-          <div
-            className="
-              flex
-              items-end
-              justify-between
+              bg-volcanic-800
             "
           >
-            <div
-              className="
-                flex
-                items-baseline
-                gap-2
-              "
-            >
-              <span
+            {productImage ? (
+              <img
+                src={productImage}
+                alt={product.name}
                 className="
-                  text-xl
-                  font-bold
+                  h-full
+                  w-full
 
-                  text-heading
+                  object-cover
 
-                  group-hover:text-ark-400
+                  transition-transform
+                  duration-500
 
-                  transition-colors
-                  duration-200
+                  group-hover:scale-110
+                "
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className="
+                  flex
+                  h-full
+                  w-full
+
+                  items-center
+                  justify-center
+
+                  bg-gradient-to-br
+                  from-volcanic-800
+                  to-volcanic-900
                 "
               >
-                {formatMoney(
-                  product.price,
-                  currency
-                )}
-              </span>
-
-              {product.old_price && (
-                <span
+                <Star
                   className="
-                    text-sm
-                    text-volcanic-500
-                    line-through
+                    h-12
+                    w-12
+
+                    text-volcanic-600
                   "
-                >
-                  {formatMoney(
-                    product.old_price,
-                    currency
+                />
+              </div>
+            )}
+
+            {/* IMAGE DARKENING */}
+            <div
+              className="
+                absolute
+                inset-0
+
+                bg-gradient-to-t
+                from-volcanic-950/80
+                via-volcanic-950/15
+                to-transparent
+
+                opacity-60
+
+                transition-opacity
+                duration-300
+
+                group-hover:opacity-80
+              "
+            />
+
+            {/* TOP LEFT BADGES */}
+            <div
+              className="
+                absolute
+                top-3
+                left-3
+
+                flex
+                flex-wrap
+
+                gap-1.5
+              "
+            >
+              {isNew && (
+                <Badge variant="new">
+                  {t(
+                    'product.badge.new'
                   )}
-                </span>
+                </Badge>
+              )}
+
+              {product.percent_off &&
+                product.percent_off > 0 && (
+                  <Badge variant="discount">
+                    -{product.percent_off}%
+                  </Badge>
+                )}
+
+              {product.featured && (
+                <Badge variant="featured">
+                  {t(
+                    'product.badge.star'
+                  )}
+                </Badge>
               )}
             </div>
 
-            {product.subscription &&
-              product.duration_periodicity && (
-                <span
-                  className="
-                    text-xs
-                    text-volcanic-500
-                  "
-                >
-                  /
-                  {translatePeriodicity(
-                    product.duration_periodicity,
-                    lang
-                  )}
-                </span>
-              )}
-          </div>
+            {/* STOCK */}
+            {stockTracked && (
+              <div
+                className="
+                  absolute
+                  top-3
+                  right-3
+                "
+              >
+                {outOfStock ? (
+                  <Badge variant="out_of_stock">
+                    {t(
+                      'product.stock.out_of_stock'
+                    )}
+                  </Badge>
+                ) : lowStock ? (
+                  <Badge variant="low_stock">
+                    {t(
+                      'product.stock.low_stock',
+                      {
+                        qty:
+                          product.stock ??
+                          0,
+                      }
+                    )}
+                  </Badge>
+                ) : (
+                  <Badge variant="in_stock">
+                    {t(
+                      'product.stock.in_stock'
+                    )}
+                  </Badge>
+                )}
+              </div>
+            )}
 
-          {/* SALE COUNTDOWN */}
-          {product.discount_end &&
-            (
-              product.discount_end <
-              1e12
-                ? product.discount_end *
-                  1000
-                : product.discount_end
-            ) > Date.now() && (
-              <DiscountCountdown
-                endTimestamp={
-                  product.discount_end
-                }
-                compact
+            {/* FULFILLMENT */}
+            {!outOfStock && (
+              <div
+                className="
+                  absolute
+                  bottom-3
+                  left-3
+                  right-14
+
+                  z-10
+                "
+              >
+                <FulfillmentBadge
+                  product={product}
+                />
+              </div>
+            )}
+
+            {/* OUT OF STOCK */}
+            {outOfStock && (
+              <div
+                className="
+                  absolute
+                  inset-0
+
+                  bg-volcanic-950/50
+
+                  backdrop-blur-[1px]
+                "
+                aria-hidden="true"
               />
             )}
-        </div>
+          </div>
+
+          {/* =================================================
+              PRODUCT INFORMATION
+          ================================================== */}
+          <div
+            className="
+              relative
+
+              flex
+              flex-1
+              flex-col
+
+              p-4
+              lg:p-5
+            "
+          >
+            <h3
+              className="
+                mb-2
+
+                text-base
+
+                font-semibold
+
+                text-heading
+
+                transition-colors
+                duration-200
+
+                group-hover:text-ark-400
+              "
+            >
+              {product.name}
+            </h3>
+
+            {product.small_description && (
+              <div
+                className="
+                  mb-4
+
+                  line-clamp-2
+
+                  flex-1
+
+                  text-sm
+
+                  leading-relaxed
+
+                  text-volcanic-400
+
+                  [&_*]:inline
+                "
+                dangerouslySetInnerHTML={{
+                  __html:
+                    product.small_description,
+                }}
+              />
+            )}
+
+            <div
+              className="
+                mt-auto
+
+                space-y-2
+
+                border-t
+                border-volcanic-800/50
+
+                pt-3
+              "
+            >
+              <div
+                className="
+                  flex
+                  items-end
+                  justify-between
+                "
+              >
+                <div
+                  className="
+                    flex
+                    items-baseline
+
+                    gap-2
+                  "
+                >
+                  <span
+                    className="
+                      text-xl
+
+                      font-bold
+
+                      text-heading
+
+                      transition-colors
+                      duration-200
+
+                      group-hover:text-ark-400
+                    "
+                  >
+                    {formatMoney(
+                      product.price,
+                      currency
+                    )}
+                  </span>
+
+                  {product.old_price && (
+                    <span
+                      className="
+                        text-sm
+
+                        text-volcanic-500
+
+                        line-through
+                      "
+                    >
+                      {formatMoney(
+                        product.old_price,
+                        currency
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                {product.subscription &&
+                  product.duration_periodicity && (
+                    <span
+                      className="
+                        text-xs
+
+                        text-volcanic-500
+                      "
+                    >
+                      /
+                      {translatePeriodicity(
+                        product.duration_periodicity,
+                        lang
+                      )}
+                    </span>
+                  )}
+              </div>
+
+              {product.discount_end &&
+                (
+                  product.discount_end <
+                  1e12
+                    ? product.discount_end *
+                      1000
+                    : product.discount_end
+                ) > Date.now() && (
+                  <DiscountCountdown
+                    endTimestamp={
+                      product.discount_end
+                    }
+                    compact
+                  />
+                )}
+            </div>
+          </div>
+        </Link>
+
+        {/* =================================================
+            QUICK VIEW BUTTON
+        ================================================== */}
+        <button
+          type="button"
+          onClick={() =>
+            setQuickViewOpen(true)
+          }
+          aria-label={`Quick view ${product.name}`}
+          title="Quick View"
+          className="
+            absolute
+            right-3
+
+            top-[calc(75%-3.25rem)]
+
+            z-20
+
+            flex
+            h-9
+            w-9
+
+            items-center
+            justify-center
+
+            rounded-full
+
+            border
+            border-white/10
+
+            bg-black/75
+
+            text-neutral-300
+
+            opacity-0
+
+            shadow-xl
+
+            backdrop-blur-md
+
+            transition-all
+            duration-200
+
+            hover:border-[#d6b35a]/50
+            hover:bg-[#171006]
+            hover:text-[#d6b35a]
+
+            group-hover:opacity-100
+
+            focus:opacity-100
+          "
+        >
+          <Eye className="h-4 w-4" />
+        </button>
       </div>
-    </Link>
+
+      <QuickViewModal
+        product={product}
+        open={quickViewOpen}
+        onClose={() =>
+          setQuickViewOpen(false)
+        }
+      />
+    </>
   );
 }

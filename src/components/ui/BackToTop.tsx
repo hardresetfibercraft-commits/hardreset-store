@@ -13,8 +13,25 @@ export default function BackToTop() {
 
   useEffect(() => {
     function handleScroll() {
+      const scrollPosition =
+        window.scrollY +
+        window.innerHeight;
+
+      const pageHeight =
+        document.documentElement
+          .scrollHeight;
+
+      const distanceFromBottom =
+        pageHeight -
+        scrollPosition;
+
+      /*
+       * Show once the customer is
+       * within 350px of the bottom.
+       */
       setVisible(
-        window.scrollY > 700
+        distanceFromBottom <= 350 &&
+        window.scrollY > 500
       );
     }
 
@@ -28,9 +45,19 @@ export default function BackToTop() {
       }
     );
 
+    window.addEventListener(
+      'resize',
+      handleScroll
+    );
+
     return () => {
       window.removeEventListener(
         'scroll',
+        handleScroll
+      );
+
+      window.removeEventListener(
+        'resize',
         handleScroll
       );
     };
@@ -52,61 +79,78 @@ export default function BackToTop() {
       className={`
         fixed
 
-        bottom-24
-        right-5
+        bottom-5
+        left-1/2
 
-        z-[75]
+        -translate-x-1/2
 
-        flex
-        h-11
-        w-11
+        z-[100]
 
+        inline-flex
         items-center
         justify-center
+
+        gap-2
 
         rounded-full
 
         border
-        border-[#d6b35a]/30
+        border-[#d6b35a]/35
 
-        bg-[#12100b]/90
+        bg-[#12100b]/95
+
+        px-5
+        py-3
+
+        text-xs
+        sm:text-sm
+
+        font-black
+
+        uppercase
+
+        tracking-[0.12em]
 
         text-[#d6b35a]
 
-        shadow-xl
-        shadow-black/40
+        shadow-2xl
+        shadow-black/60
 
-        backdrop-blur-md
+        backdrop-blur-xl
 
         transition-all
         duration-300
 
         hover:-translate-y-1
-        hover:border-[#f0cf72]/60
+        hover:-translate-x-1/2
+
+        hover:border-[#f0cf72]/70
         hover:bg-[#1a1409]
         hover:text-[#f0cf72]
 
         ${
           visible
             ? `
-              translate-y-0
               opacity-100
               pointer-events-auto
+              translate-y-0
             `
             : `
-              translate-y-4
               opacity-0
               pointer-events-none
+              translate-y-4
             `
         }
       `}
     >
       <ArrowUp
         className="
-          h-5
-          w-5
+          h-4
+          w-4
         "
       />
+
+      Back to Top
     </button>
   );
 }

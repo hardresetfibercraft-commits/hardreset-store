@@ -8,6 +8,7 @@ import CategorySection from '../components/home/CategorySection';
 import ApiErrorNotice from '../components/ui/ApiErrorNotice';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import TrustStrip from '../components/ui/TrustStrip';
+import HowDeliveryWorks from '../components/ui/HowDeliveryWorks';
 
 import {
   getAllProducts,
@@ -100,13 +101,12 @@ export default function HomePage() {
   return (
     <div className="animate-fade-in">
 
-      {/* HERO */}
       <Hero />
 
-      {/* TRUST / STORE INFO STRIP */}
       <TrustStrip />
 
-      {/* ERROR MESSAGES */}
+      <HowDeliveryWorks />
+
       <div
         className="
           max-w-7xl
@@ -132,17 +132,14 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* FEATURED PRODUCTS */}
       <FeaturedProducts
         products={products}
       />
 
-      {/* SHOP CATEGORIES */}
       <CategorySection
         categories={categories}
       />
 
-      {/* LATEST PRODUCTS */}
       <LatestProducts
         products={products}
       />

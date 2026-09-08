@@ -72,7 +72,7 @@ export default function FloatingDiscordButton() {
         fixed
         bottom-5
         right-5
-        z-[80]
+        z-40
 
         flex
         flex-col

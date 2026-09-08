@@ -1,31 +1,137 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://cdn.tip4serv.com/shop/ALL_STORES/15823/templates/neon/assets/images/9d91820cbe0d8c29f9068da91cfde636.webp" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Neon Demo</title>
-    <meta name="description" content="Need epic gear ? Our shop has it all: weapons, ranks, and in-game goodies to level up your gameplay! Come grab your loot at Server PVP" />
-    <meta property="og:title" content="Neon Demo" />
-    <meta property="og:description" content="Need epic gear ? Our shop has it all: weapons, ranks, and in-game goodies to level up your gameplay! Come grab your loot at Server PVP" />
-    <meta property="og:image" content="https://cdn.tip4serv.com/shop/ALL_STORES/15823/templates/neon/assets/images/9d91820cbe0d8c29f9068da91cfde636.webp" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Neon Demo" />
-    <meta name="twitter:description" content="Need epic gear ? Our shop has it all: weapons, ranks, and in-game goodies to level up your gameplay! Come grab your loot at Server PVP" />
-    <meta name="twitter:image" content="https://cdn.tip4serv.com/shop/ALL_STORES/15823/templates/neon/assets/images/9d91820cbe0d8c29f9068da91cfde636.webp" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <!-- =====================================================
+         HARDRESET PAGE INFO
+    ====================================================== -->
+    <title>HardReset 25x Store | ARK: Survival Ascended PvP</title>
+
+    <meta
+      name="description"
+      content="Official HardReset 25x ARK: Survival Ascended PvP store. Browse dinos, resources, blueprints, PvP kits, structures, mutations, MEKs, Map Buyer packages, VIP services and more."
+    />
+
+    <meta
+      name="theme-color"
+      content="#090806"
+    />
+
+    <!-- =====================================================
+         CANONICAL URL
+    ====================================================== -->
+    <link
+      rel="canonical"
+      href="https://store.hardresetark.com/"
+    />
+
+    <!-- =====================================================
+         FAVICON
+         Using the HardReset fortress image for now.
+         We can make a dedicated HardReset icon later.
+    ====================================================== -->
+    <link
+      rel="icon"
+      type="image/webp"
+      href="/hardreset-25x-background.webp"
+    />
+
+    <!-- =====================================================
+         OPEN GRAPH
+         Discord / Facebook / embeds
+    ====================================================== -->
+    <meta
+      property="og:type"
+      content="website"
+    />
+
+    <meta
+      property="og:site_name"
+      content="HardReset"
+    />
+
+    <meta
+      property="og:title"
+      content="HardReset 25x Store"
+    />
+
+    <meta
+      property="og:description"
+      content="HardReset 25x ARK: Survival Ascended PvP — gear up with dinos, resources, blueprints, PvP kits, mutations, MEKs, Map Buyer packages, VIP services and more."
+    />
+
+    <meta
+      property="og:url"
+      content="https://store.hardresetark.com/"
+    />
+
+    <meta
+      property="og:image"
+      content="https://store.hardresetark.com/hardreset-25x-background.webp"
+    />
+
+    <meta
+      property="og:image:alt"
+      content="HardReset 25x ARK Survival Ascended PvP Store"
+    />
+
+    <!-- =====================================================
+         X / TWITTER CARD
+    ====================================================== -->
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+
+    <meta
+      name="twitter:title"
+      content="HardReset 25x Store"
+    />
+
+    <meta
+      name="twitter:description"
+      content="HardReset 25x ARK: Survival Ascended PvP — dinos, kits, resources, blueprints, mutations, MEKs, Map Buyer packages and more."
+    />
+
+    <meta
+      name="twitter:image"
+      content="https://store.hardresetark.com/hardreset-25x-background.webp"
+    />
+
+    <!-- =====================================================
+         THEME
+    ====================================================== -->
     <script>
-      (function() {
+      (function () {
         var t = localStorage.getItem('theme');
-        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+
+        if (
+          t === 'dark' ||
+          (
+            !t &&
+            window.matchMedia(
+              '(prefers-color-scheme: dark)'
+            ).matches
+          )
+        ) {
           document.documentElement.classList.add('dark');
         }
       })();
     </script>
   </head>
+
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <script
+      type="module"
+      src="/src/main.tsx"
+    ></script>
   </body>
 </html>

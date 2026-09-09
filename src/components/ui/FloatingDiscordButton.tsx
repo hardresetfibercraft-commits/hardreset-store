@@ -69,6 +69,7 @@ export default function FloatingDiscordButton() {
     <div
       ref={wrapperRef}
       className="
+        pointer-events-none
         fixed
         bottom-5
         right-5
@@ -95,12 +96,14 @@ export default function FloatingDiscordButton() {
           ${
             open
               ? `
+                visible
                 translate-y-0
                 scale-100
                 opacity-100
                 pointer-events-auto
               `
               : `
+                invisible
                 translate-y-3
                 scale-95
                 opacity-0
@@ -113,8 +116,8 @@ export default function FloatingDiscordButton() {
           className="
             relative
 
-            w-[300px]
-            sm:w-[340px]
+            w-[calc(100vw-2.5rem)]
+            max-w-[340px]
 
             overflow-hidden
 
@@ -743,6 +746,8 @@ export default function FloatingDiscordButton() {
         aria-label="HardReset support"
         aria-expanded={open}
         className="
+          pointer-events-auto
+
           group
 
           relative

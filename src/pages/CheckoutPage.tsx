@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader as Loader2, ShoppingCart, CircleAlert as AlertCircle, ShieldCheck, Zap, Lock, ShoppingBag, Trash2, Minus, Plus, Circle as HelpCircle, X as XIcon, Check } from 'lucide-react';
+import { ArrowLeft, Loader as Loader2, ShoppingCart, CircleAlert as AlertCircle, ShieldCheck, Zap, Lock, ShoppingBag, Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '../lib/cart';
 import { useStore } from '../lib/store';
 import { useToast } from '../lib/toast';
@@ -42,86 +42,6 @@ export default function CheckoutPage() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [discordHelpOpen, setDiscordHelpOpen] = useState(false);
-  const [discordConnecting, setDiscordConnecting] = useState(false);
-  const discordClientId = import.meta.env.VITE_DISCORD_CLIENT_ID as string | undefined;
-
-  const startDiscordOAuth = useCallback(() => {
-    if (!discordClientId) {
-      addToast(t('checkout.discord_help.not_configured'), 'error');
-      return;
-    }
-    const redirectUri = `${window.location.origin}/auth/discord/callback`;
-    const state = Math.random().toString(36).slice(2);
-    const authUrl = new URL('https://discord.com/oauth2/authorize');
-    authUrl.searchParams.set('client_id', discordClientId);
-    authUrl.searchParams.set('response_type', 'code');
-    authUrl.searchParams.set('redirect_uri', redirectUri);
-    authUrl.searchParams.set('scope', 'identify');
-    authUrl.searchParams.set('state', state);
-    authUrl.searchParams.set('prompt', 'none');
-
-    try {
-      window.sessionStorage.setItem('discord_oauth_opener_origin', window.location.origin);
-    } catch {
-      // ignore
-    }
-
-    const width = 500;
-    const height = 720;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-    const popup = window.open(
-      authUrl.toString(),
-      'discord-oauth',
-      `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no`,
-    );
-
-    if (!popup) {
-      addToast(t('checkout.discord_help.popup_blocked'), 'warning');
-      return;
-    }
-
-    setDiscordConnecting(true);
-
-    const pollTimer = window.setInterval(() => {
-      if (popup.closed) cleanup();
-    }, 500);
-
-    const cleanup = () => {
-      window.removeEventListener('message', onMessage);
-      window.clearInterval(pollTimer);
-      setDiscordConnecting(false);
-    };
-
-    const onMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
-      const data = event.data as { type?: string; ok?: boolean; id?: string; username?: string; global_name?: string; error?: string };
-      if (!data || data.type !== 'discord-oauth') return;
-      if (data.ok && data.id) {
-        const cleaned = data.id.replace(/[^0-9]/g, '');
-        if (/^\d{17,20}$/.test(cleaned)) {
-          setIdentifierValues((prev) => ({ ...prev, discord_id: cleaned }));
-          setAutofilledFields((prev) => {
-            const next = new Set(prev);
-            next.delete('discord_id');
-            return next;
-          });
-          addToast(
-            t('checkout.discord_help.connected', { username: data.global_name || data.username || cleaned }),
-            'success',
-          );
-          setDiscordHelpOpen(false);
-        }
-      } else {
-        addToast(t('checkout.discord_help.connect_failed', { error: data.error || '—' }), 'error');
-      }
-      cleanup();
-    };
-
-    window.addEventListener('message', onMessage);
-  }, [discordClientId, addToast, t]);
-
   const cartTotal = items.reduce((sum, item) => {
     const extras = computeExtrasPrice(item.product.custom_fields, item.customFieldValues);
     return sum + (item.product.price + extras) * item.quantity;
@@ -204,6 +124,14 @@ export default function CheckoutPage() {
         addToast(t('checkout.toast.field_required', { label }), 'warning');
         return;
       }
+    }
+
+    if (
+      requiredIdentifiers.includes('discord_id') &&
+      !/^\d{17,20}$/.test(identifierValues.discord_id?.trim() || '')
+    ) {
+      addToast('Discord ID must be the 17-20 digit numeric User ID.', 'warning');
+      return;
     }
 
     for (const item of items) {
@@ -549,8 +477,9 @@ export default function CheckoutPage() {
                       const placeholder = known ? t(`checkout.identifier.${id}.placeholder`) : '';
                       const wasAutofilled = autofilledFields.has(id) && identifierValues[id]?.trim();
                       const isDiscord = id === 'discord_id';
-                      const discordValue = identifierValues[id] || '';
-                      const discordValid = /^\d{17,20}$/.test(discordValue.trim());
+                      const fieldValue = identifierValues[id] || '';
+                      const discordValid = /^\d{17,20}$/.test(fieldValue.trim());
+
                       return (
                         <div key={id}>
                           <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
@@ -563,50 +492,23 @@ export default function CheckoutPage() {
                                   Tip4Serv
                                 </span>
                               )}
-                              {isDiscord && discordValue && discordValid && (
-                                <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                  <Check className="w-3 h-3" />
-                                  OK
-                                </span>
-                              )}
                             </label>
-                            {isDiscord && (
-                              <div className="flex items-center gap-3 flex-wrap">
-                                <button
-                                  type="button"
-                                  onClick={startDiscordOAuth}
-                                  disabled={discordConnecting}
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold text-white bg-[#5865F2] hover:bg-[#4752c4] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                                >
-                                  {discordConnecting ? (
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  ) : (
-                                    <DiscordIcon className="w-3.5 h-3.5" />
-                                  )}
-                                  {discordConnecting
-                                    ? t('checkout.discord_help.connecting')
-                                    : t('checkout.discord_help.connect')}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => setDiscordHelpOpen(true)}
-                                  className="inline-flex items-center gap-1.5 text-xs font-medium text-ark-400 hover:text-ark-300 transition-colors"
-                                >
-                                  <HelpCircle className="w-3.5 h-3.5" />
-                                  {t('checkout.discord_help.button')}
-                                </button>
-                              </div>
-                            )}
                           </div>
+
                           <div className="relative">
                             <input
                               type={id === 'email' ? 'email' : 'text'}
                               inputMode={isDiscord ? 'numeric' : undefined}
                               placeholder={placeholder}
-                              value={discordValue}
+                              value={fieldValue}
+                              maxLength={isDiscord ? 20 : undefined}
                               onChange={(e) => {
-                                const value = isDiscord ? e.target.value.replace(/[^0-9]/g, '') : e.target.value;
+                                const value = isDiscord
+                                  ? e.target.value.replace(/[^0-9]/g, '')
+                                  : e.target.value;
+
                                 setIdentifierValues((prev) => ({ ...prev, [id]: value }));
+
                                 if (autofilledFields.has(id)) {
                                   setAutofilledFields((prev) => {
                                     const next = new Set(prev);
@@ -618,10 +520,11 @@ export default function CheckoutPage() {
                               className="input-field"
                             />
                           </div>
-                          {isDiscord && discordValue && !discordValid && (
+
+                          {isDiscord && fieldValue && !discordValid && (
                             <p className="mt-1.5 text-xs text-amber-400 flex items-center gap-1.5">
                               <AlertCircle className="w-3.5 h-3.5" />
-                              {t('checkout.discord_help.invalid')}
+                              Discord ID must be the 17-20 digit numeric User ID.
                             </p>
                           )}
                         </div>
@@ -739,84 +642,6 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* discord helper modal */}
-      {discordHelpOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
-          onClick={() => setDiscordHelpOpen(false)}
-        >
-          <div
-            className="glass-card max-w-lg w-full p-6 sm:p-7 relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setDiscordHelpOpen(false)}
-              className="absolute top-3 right-3 p-1.5 rounded-lg text-volcanic-400 hover:text-heading hover:bg-volcanic-800/60 transition-colors"
-              aria-label={t('checkout.discord_help.close')}
-            >
-              <XIcon className="w-5 h-5" />
-            </button>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-ark-600/15 flex items-center justify-center shrink-0">
-                <HelpCircle className="w-5 h-5 text-ark-500" />
-              </div>
-              <h3 className="text-lg font-bold text-heading">{t('checkout.discord_help.title')}</h3>
-            </div>
-            <p className="text-sm text-volcanic-300 mb-4">{t('checkout.discord_help.intro')}</p>
-            <div className="mb-5 p-4 rounded-xl bg-[#5865F2]/10 border border-[#5865F2]/30">
-                <button
-                  type="button"
-                  onClick={startDiscordOAuth}
-                  disabled={discordConnecting}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-[#5865F2] hover:bg-[#4752c4] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                >
-                  {discordConnecting ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <DiscordIcon className="w-4 h-4" />
-                  )}
-                  {discordConnecting
-                    ? t('checkout.discord_help.connecting')
-                    : t('checkout.discord_help.connect')}
-                </button>
-                <p className="text-xs text-volcanic-400 mt-3 text-center">
-                  {t('checkout.discord_help.or_manual')}
-                </p>
-              </div>
-            <ol className="space-y-3 text-sm text-volcanic-300">
-              {[1, 2, 3, 4].map((n) => (
-                <li key={n} className="flex gap-3">
-                  <span className="shrink-0 w-6 h-6 rounded-full bg-ark-600 text-white text-xs font-bold flex items-center justify-center">
-                    {n}
-                  </span>
-                  <span className="leading-relaxed">{t(`checkout.discord_help.step${n}`)}</span>
-                </li>
-              ))}
-            </ol>
-            <div className="mt-4 p-3 rounded-lg bg-volcanic-800/40 border border-volcanic-700/40 text-xs text-volcanic-400 leading-relaxed">
-              {t('checkout.discord_help.tip')}
-            </div>
-            <div className="mt-5 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setDiscordHelpOpen(false)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-ark-600 hover:bg-ark-500 text-white text-sm font-semibold transition-colors"
-              >
-                {t('checkout.discord_help.close')}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  );
-}
-
-function DiscordIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden="true">
-      <path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3a14.27 14.27 0 0 0-.658 1.34 18.27 18.27 0 0 0-5.487 0A12.61 12.61 0 0 0 9.748 3a19.74 19.74 0 0 0-3.762 1.37C2.36 9.744 1.36 14.987 1.86 20.156a19.93 19.93 0 0 0 6.073 3.04c.49-.668.927-1.379 1.302-2.124a12.94 12.94 0 0 1-2.05-.98c.172-.126.34-.257.501-.39 3.927 1.81 8.18 1.81 12.061 0 .163.133.331.264.503.39-.658.39-1.346.722-2.052.98.375.745.811 1.456 1.302 2.124a19.9 19.9 0 0 0 6.073-3.04c.583-5.985-.992-11.18-4.156-15.787zM8.02 16.85c-1.183 0-2.157-1.085-2.157-2.418 0-1.333.955-2.418 2.157-2.418 1.21 0 2.176 1.094 2.157 2.418 0 1.333-.955 2.418-2.157 2.418zm7.974 0c-1.183 0-2.157-1.085-2.157-2.418 0-1.333.955-2.418 2.157-2.418 1.21 0 2.176 1.094 2.157 2.418 0 1.333-.946 2.418-2.157 2.418z" />
-    </svg>
   );
 }
